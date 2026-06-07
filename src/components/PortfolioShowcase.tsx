@@ -49,7 +49,7 @@ export default function PortfolioShowcase() {
                 {category.images.map((imagePath, imgIndex) => (
                   <div 
                     key={imgIndex} 
-                    className="glass-card rounded-2xl overflow-hidden group border-gray-800 h-[400px] relative"
+                    className="glass-card rounded-2xl overflow-hidden group border-gray-800 h-[450px] md:h-[600px] lg:h-[700px] relative"
                     data-aos="fade-up"
                     data-aos-delay={(imgIndex % 3) * 100}
                   >
