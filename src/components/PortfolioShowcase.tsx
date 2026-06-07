@@ -1,94 +1,72 @@
 import Link from 'next/link';
+import fs from 'fs';
+import path from 'path';
 
 export default function PortfolioShowcase() {
-  const projects = [
-    {
-      name: "Royal Tadka",
-      type: "Restaurant Website",
-      image: "/assets/Works/image copy.png",
-      features: ["Online Menu", "WhatsApp Ordering", "Google Maps", "Mobile Responsive"],
-    },
-    {
-      name: "Elite Fitness",
-      type: "Gym & Fitness",
-      image: "/assets/Works/image copy 2.png",
-      features: ["Membership Plans", "Trainer Profiles", "WhatsApp Inquiry", "Location Maps"],
-    },
-    {
-      name: "City Care Hospital",
-      type: "Hospital & Clinic",
-      image: "/assets/Works/image copy 3.png",
-      features: ["Doctor Profiles", "Appointment Booking", "Emergency Contact", "Services List"],
-    },
-    {
-      name: "Skyline Real Estate",
-      type: "Real Estate Agency",
-      image: "/assets/Works/image copy 4.png",
-      features: ["Property Listings", "High-Res Gallery", "WhatsApp Contact", "Lead Forms"],
-    },
-    {
-      name: "Glamour Salon",
-      type: "Salon & Spa",
-      image: "/assets/Works/image copy 5.png",
-      features: ["Service Pricing", "Online Booking", "Customer Reviews", "Gallery"],
-    },
-    {
-      name: "Toppers Coaching",
-      type: "Educational Institute",
-      image: "/assets/Works/image copy 6.png",
-      features: ["Course Details", "Student Results", "Admission Forms", "Faculty Profiles"],
+  const worksDir = path.join(process.cwd(), 'public', 'assets', 'Works');
+  
+  let categories: { name: string, images: string[] }[] = [];
+  
+  try {
+    if (fs.existsSync(worksDir)) {
+      const folders = fs.readdirSync(worksDir, { withFileTypes: true })
+        .filter(dirent => dirent.isDirectory())
+        .map(dirent => dirent.name);
+        
+      folders.forEach(folder => {
+        const folderPath = path.join(worksDir, folder);
+        const files = fs.readdirSync(folderPath)
+          .filter(file => file.match(/\.(png|jpe?g|gif|webp)$/i));
+          
+        if (files.length > 0) {
+          categories.push({
+            name: folder,
+            images: files.map(file => `/assets/Works/${folder}/${file}`)
+          });
+        }
+      });
     }
-  ];
+  } catch (error) {
+    console.error("Error reading portfolio images:", error);
+  }
 
   return (
     <section id="portfolio" className="py-24 relative z-10">
       <div className="container mx-auto px-6 lg:px-12">
         <div className="text-center max-w-3xl mx-auto mb-16" data-aos="fade-up">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">Proven Results Across <span className="text-gradient">Every Industry</span></h2>
-          <p className="text-gray-400 text-lg">We don&apos;t just build restaurant websites. We craft premium digital experiences that drive growth for all local businesses.</p>
+          <p className="text-gray-400 text-lg">We craft premium digital experiences that drive growth for all local businesses. Explore our works below.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {projects.map((project, index) => (
-            <div 
-              key={index} 
-              className="glass-card rounded-2xl overflow-hidden group flex flex-col"
-              data-aos="fade-up"
-              data-aos-delay={index * 100}
-            >
-              {/* Image Container with 3D-like hover */}
-              <div className="h-64 overflow-hidden relative border-b border-gray-800">
-                <img 
-                  src={project.image} 
-                  alt={project.name} 
-                  className="w-full h-full object-cover object-top transition-transform duration-[6000ms] ease-linear group-hover:scale-110 group-hover:object-bottom"
-                />
-                <div className="absolute inset-0 bg-dark/20 group-hover:bg-transparent transition-colors duration-500"></div>
-                <div className="absolute top-4 right-4 bg-dark/80 backdrop-blur-md px-3 py-1 rounded-full border border-gray-700 text-xs font-bold text-primary">
-                  {project.type}
-                </div>
-              </div>
+        {categories.length > 0 ? (
+          categories.map((category, catIndex) => (
+            <div key={catIndex} className="mb-20 last:mb-0">
+              <h3 className="text-2xl font-bold text-white mb-8 border-b border-gray-800 pb-4 inline-block pr-12" data-aos="fade-right">
+                <span className="text-primary mr-3">#</span> {category.name}
+              </h3>
               
-              {/* Content */}
-              <div className="p-8 flex-grow flex flex-col">
-                <h3 className="text-2xl font-bold mb-4">{project.name}</h3>
-                
-                <ul className="space-y-3 mb-8 flex-grow">
-                  {project.features.map((feature, fIndex) => (
-                    <li key={fIndex} className="flex items-center text-sm text-gray-300">
-                      <i className="fa-solid fa-check-circle text-primary mr-3 text-sm"></i>
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                
-                <Link href="/portfolio" className="w-full block text-center py-3 rounded-xl border border-primary/30 text-primary font-bold hover:bg-primary hover:text-dark transition-all duration-300 shadow-[0_0_15px_rgba(244,185,66,0.1)] hover:shadow-[0_0_20px_rgba(244,185,66,0.4)]">
-                  View Live Demo
-                </Link>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {category.images.map((imagePath, imgIndex) => (
+                  <div 
+                    key={imgIndex} 
+                    className="glass-card rounded-2xl overflow-hidden group border-gray-800 h-[400px] relative"
+                    data-aos="fade-up"
+                    data-aos-delay={(imgIndex % 3) * 100}
+                  >
+                    <img 
+                      src={imagePath} 
+                      alt={`${category.name} Website`} 
+                      className="w-full h-full object-cover object-top transition-transform duration-[6000ms] ease-linear group-hover:object-bottom"
+                    />
+                    <div className="absolute inset-0 bg-dark/10 group-hover:bg-transparent transition-colors duration-500"></div>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
-        </div>
+          ))
+        ) : (
+          <p className="text-center text-gray-500">No projects found in the Assets folder.</p>
+        )}
         
         <div className="mt-16 text-center" data-aos="fade-up">
           <Link href="/portfolio" className="inline-flex items-center gap-2 text-gray-300 hover:text-primary transition font-medium border-b border-transparent hover:border-primary pb-1">
