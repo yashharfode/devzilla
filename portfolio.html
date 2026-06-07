@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevZilla - Our Portfolio</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- AOS Animation CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#d4af37', // Premium Gold
+                        secondary: '#f59e0b', // Rich Amber
+                        dark: '#020617', // Deep Slate
+                        card: '#0f172a', // Slate 900
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                        'hero-pattern': 'linear-gradient(to right bottom, #020617, #0f172a)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #020617;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Outfit', sans-serif;
+        }
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-image: linear-gradient(90deg, #fde047, #d4af37);
+        }
+        .bg-gradient-primary {
+            background: linear-gradient(90deg, #d4af37, #b45309);
+        }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glow {
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #b45309;
+        }
+    </style>
+</head>
+<body class="antialiased overflow-x-hidden flex flex-col min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 glass-panel py-4 transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-6 lg:px-12 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-heading font-bold flex items-center gap-2">
+                <i class="fa-solid fa-code text-primary"></i> DevZilla
+            </a>
+            <div class="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-300">
+                <a href="index.html#home" class="hover:text-white transition">Home</a>
+                <a href="portfolio.html" class="text-primary transition">Portfolio</a>
+                <a href="index.html#pricing" class="hover:text-white transition">Pricing</a>
+                <a href="index.html#features" class="hover:text-white transition">Features</a>
+            </div>
+            <a href="https://wa.me/919244161044" class="hidden md:inline-block bg-gradient-primary px-6 py-2 rounded-full font-medium text-sm hover:glow transition">
+                Get A Free Quote <i class="fa-solid fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="pt-32 pb-16 bg-gradient-to-b from-[#020617] to-card border-b border-gray-800">
+        <div class="container mx-auto px-6 lg:px-12 text-center" data-aos="fade-up">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-heading font-bold mb-4">Our <span class="text-gradient">Masterpieces</span></h1>
+            <p class="text-gray-400 max-w-2xl mx-auto text-lg">Explore the premium websites we've crafted for restaurants and cafes across India. Every design is built for speed, beauty, and conversion.</p>
+        </div>
+    </section>
+
+    <!-- Portfolio Grid -->
+    <section class="py-20 flex-grow">
+        <div class="container mx-auto px-6 lg:px-12">
+            <div id="portfolio-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                <!-- Dynamically populated via JS -->
+            </div>
+            
+            <div id="loading-spinner" class="text-center py-10">
+                <i class="fa-solid fa-circle-notch fa-spin text-4xl text-primary"></i>
+                <p class="text-gray-500 mt-4">Loading our beautiful works...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-card border-t border-gray-800 pt-16 pb-8 mt-auto">
+        <div class="container mx-auto px-6 lg:px-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div>
+                    <a href="index.html" class="text-2xl font-heading font-bold flex items-center gap-2 mb-6">
+                        <i class="fa-solid fa-code text-primary"></i> DevZilla
+                    </a>
+                    <p class="text-gray-400 text-sm mb-6">We design & develop modern websites that help businesses grow and succeed in the digital world.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition text-gray-400 hover:text-white"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition text-gray-400 hover:text-white"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition text-gray-400 hover:text-white"><i class="fa-brands fa-linkedin-in"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition text-gray-400 hover:text-white"><i class="fa-brands fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-6">Quick Links</h4>
+                    <ul class="space-y-3 text-gray-400 text-sm">
+                        <li><a href="index.html#home" class="hover:text-primary transition">Home</a></li>
+                        <li><a href="index.html#features" class="hover:text-primary transition">About Us</a></li>
+                        <li><a href="index.html#features" class="hover:text-primary transition">Services</a></li>
+                        <li><a href="portfolio.html" class="text-primary transition">Portfolio</a></li>
+                        <li><a href="index.html#pricing" class="hover:text-primary transition">Pricing</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-6">Services</h4>
+                    <ul class="space-y-3 text-gray-400 text-sm">
+                        <li><a href="#" class="hover:text-primary transition">Website Design</a></li>
+                        <li><a href="#" class="hover:text-primary transition">E-Commerce Websites</a></li>
+                        <li><a href="#" class="hover:text-primary transition">SEO Optimization</a></li>
+                        <li><a href="#" class="hover:text-primary transition">Restaurant Websites</a></li>
+                        <li><a href="#" class="hover:text-primary transition">Maintenance & Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-6">Contact Us</h4>
+                    <ul class="space-y-4 text-sm font-medium">
+                        <li><a href="tel:+919244161044" class="flex items-center gap-3 text-white hover:text-primary transition"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-primary"><i class="fa-solid fa-phone"></i></div> Call Now</a></li>
+                        <li><a href="https://wa.me/919244161044" class="flex items-center gap-3 text-white hover:text-green-500 transition"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-green-500"><i class="fa-brands fa-whatsapp"></i></div> WhatsApp</a></li>
+                        <li><a href="mailto:info@devzilla.com" class="flex items-center gap-3 text-white hover:text-blue-400 transition"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-blue-400"><i class="fa-solid fa-envelope"></i></div> Email</a></li>
+                    </ul>
+                    <a href="https://wa.me/919244161044" class="inline-block mt-6 px-6 py-2 rounded-lg border border-primary text-primary hover:bg-primary hover:text-dark transition text-sm font-bold">Book a Free Consultation</a>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+                <p>&copy; 2026 DevZilla. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white transition">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition">Terms & Conditions</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- AOS Animation Script -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            once: true,
+            offset: 50,
+        });
+
+        // Navbar blur on scroll
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('shadow-lg');
+                navbar.classList.replace('py-4', 'py-2');
+            } else {
+                navbar.classList.remove('shadow-lg');
+                navbar.classList.replace('py-2', 'py-4');
+            }
+        });
+
+        // Dynamically load projects into grid
+        document.addEventListener("DOMContentLoaded", () => {
+            const portfolioGrid = document.getElementById('portfolio-grid');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            
+            const possibleImages = [];
+            possibleImages.push("assets/Works/image.png");
+            possibleImages.push("assets/Works/image copy.png");
+            for(let i=2; i<=20; i++) {
+                possibleImages.push(`assets/Works/image copy ${i}.png`);
+            }
+            possibleImages.push("assets/Works/ChatGPT Image Jun 7, 2026, 09_23_51 AM.png");
+
+            const validImages = [];
+            let itemsProcessed = 0;
+
+            possibleImages.forEach((imgSrc) => {
+                const img = new Image();
+                img.onload = function() {
+                    validImages.push(imgSrc);
+                    checkComplete();
+                };
+                img.onerror = function() {
+                    checkComplete();
+                };
+                img.src = imgSrc;
+            });
+
+            function checkComplete() {
+                itemsProcessed++;
+                if (itemsProcessed === possibleImages.length) {
+                    renderGrid(validImages);
+                }
+            }
+
+            function renderGrid(images) {
+                loadingSpinner.style.display = 'none';
+                
+                if (images.length === 0) {
+                    portfolioGrid.innerHTML = '<p class="col-span-full text-center text-gray-500">No projects found.</p>';
+                    return;
+                }
+
+                let itemsHtml = '';
+                images.forEach((img, index) => {
+                    const delay = (index % 3) * 100;
+                    itemsHtml += \`
+                        <div class="h-[450px] md:h-[550px] rounded-2xl overflow-hidden border border-gray-800 shadow-xl relative group bg-card" data-aos="fade-up" data-aos-delay="\${delay}">
+                            <img src="\${img}" alt="Project Showcase" class="w-full h-full object-cover object-top transition-all duration-[4000ms] ease-linear group-hover:object-bottom opacity-90 group-hover:opacity-100">
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent opacity-0 group-hover:opacity-60 transition-opacity duration-300 pointer-events-none"></div>
+                        </div>
+                    \`;
+                });
+                
+                portfolioGrid.innerHTML = itemsHtml;
+                
+                // Re-initialize AOS for newly added dynamic elements
+                setTimeout(() => {
+                    AOS.refresh();
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>
