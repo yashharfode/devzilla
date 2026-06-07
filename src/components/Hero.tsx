@@ -15,7 +15,7 @@ export default function Hero() {
               <span className="text-primary font-medium text-sm">🔥 #1 Choice For Restaurants & Cafes</span>
             </div>
             
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6">
               Get More Customers For Your <span className="text-gradient">Restaurant</span>
             </h1>
             
