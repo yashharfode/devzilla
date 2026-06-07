@@ -25,6 +25,13 @@ export default function PortfolioShowcase() {
           });
         }
       });
+      
+      // Sort to ensure 'Restaurants' is always at the top
+      categories.sort((a, b) => {
+        if (a.name.toLowerCase().includes('restaurant')) return -1;
+        if (b.name.toLowerCase().includes('restaurant')) return 1;
+        return a.name.localeCompare(b.name);
+      });
     }
   } catch (error) {
     console.error("Error reading portfolio images:", error);
