@@ -108,15 +108,32 @@
             <a href="#" class="text-2xl font-heading font-bold flex items-center gap-2">
                 <i class="fa-solid fa-code text-primary"></i> DevZilla
             </a>
+            
+            <!-- Desktop Menu -->
             <div class="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-300">
                 <a href="#home" class="hover:text-white transition">Home</a>
                 <a href="#portfolio" class="hover:text-white transition">Portfolio</a>
                 <a href="#pricing" class="hover:text-white transition">Pricing</a>
                 <a href="#features" class="hover:text-white transition">Features</a>
             </div>
+            
             <a href="#contact" class="hidden md:inline-block bg-gradient-primary px-6 py-2 rounded-full font-medium text-sm hover:glow transition">
                 Get A Free Quote <i class="fa-solid fa-arrow-right ml-1"></i>
             </a>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden text-gray-300 hover:text-white focus:outline-none">
+                <i class="fa-solid fa-bars text-2xl"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 w-full glass-panel border-t border-gray-800 shadow-xl flex flex-col py-4 px-6 space-y-4">
+            <a href="#home" class="text-gray-300 hover:text-white font-medium mobile-link">Home</a>
+            <a href="#portfolio" class="text-gray-300 hover:text-white font-medium mobile-link">Portfolio</a>
+            <a href="#pricing" class="text-gray-300 hover:text-white font-medium mobile-link">Pricing</a>
+            <a href="#features" class="text-gray-300 hover:text-white font-medium mobile-link">Features</a>
+            <a href="#contact" class="bg-gradient-primary px-6 py-2 rounded-full font-medium text-sm text-center mobile-link mt-2">Get A Free Quote</a>
         </div>
     </nav>
 
@@ -612,6 +629,24 @@
                 navbar.classList.replace('py-2', 'py-4');
             }
         });
+
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Close menu when clicking a link
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+        }
     </script>
     <script>
         // Dynamically render continuous sliding projects by checking file existence

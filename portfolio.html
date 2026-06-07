@@ -86,15 +86,32 @@
             <a href="index.html" class="text-2xl font-heading font-bold flex items-center gap-2">
                 <i class="fa-solid fa-code text-primary"></i> DevZilla
             </a>
+            
+            <!-- Desktop Menu -->
             <div class="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-300">
                 <a href="index.html#home" class="hover:text-white transition">Home</a>
                 <a href="portfolio.html" class="text-primary transition">Portfolio</a>
                 <a href="index.html#pricing" class="hover:text-white transition">Pricing</a>
                 <a href="index.html#features" class="hover:text-white transition">Features</a>
             </div>
+            
             <a href="https://wa.me/919244161044" class="hidden md:inline-block bg-gradient-primary px-6 py-2 rounded-full font-medium text-sm hover:glow transition">
                 Get A Free Quote <i class="fa-solid fa-arrow-right ml-1"></i>
             </a>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden text-gray-300 hover:text-white focus:outline-none">
+                <i class="fa-solid fa-bars text-2xl"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 w-full glass-panel border-t border-gray-800 shadow-xl flex flex-col py-4 px-6 space-y-4">
+            <a href="index.html#home" class="text-gray-300 hover:text-white font-medium mobile-link">Home</a>
+            <a href="portfolio.html" class="text-primary font-medium mobile-link">Portfolio</a>
+            <a href="index.html#pricing" class="text-gray-300 hover:text-white font-medium mobile-link">Pricing</a>
+            <a href="index.html#features" class="text-gray-300 hover:text-white font-medium mobile-link">Features</a>
+            <a href="https://wa.me/919244161044" class="bg-gradient-primary px-6 py-2 rounded-full font-medium text-sm text-center mobile-link mt-2">Get A Free Quote</a>
         </div>
     </nav>
 
@@ -196,6 +213,24 @@
             }
         });
 
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Close menu when clicking a link
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+        }
+
         // Dynamically load projects into grid
         document.addEventListener("DOMContentLoaded", () => {
             const portfolioGrid = document.getElementById('portfolio-grid');
@@ -242,12 +277,12 @@
                 let itemsHtml = '';
                 images.forEach((img, index) => {
                     const delay = (index % 3) * 100;
-                    itemsHtml += \`
-                        <div class="h-[450px] md:h-[550px] rounded-2xl overflow-hidden border border-gray-800 shadow-xl relative group bg-card" data-aos="fade-up" data-aos-delay="\${delay}">
-                            <img src="\${img}" alt="Project Showcase" class="w-full h-full object-cover object-top transition-all duration-[4000ms] ease-linear group-hover:object-bottom opacity-90 group-hover:opacity-100">
+                    itemsHtml += `
+                        <div class="h-[450px] md:h-[550px] rounded-2xl overflow-hidden border border-gray-800 shadow-xl relative group bg-card" data-aos="fade-up" data-aos-delay="${delay}">
+                            <img src="${img}" alt="Project Showcase" class="w-full h-full object-cover object-top transition-all duration-[4000ms] ease-linear group-hover:object-bottom opacity-90 group-hover:opacity-100">
                             <div class="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent opacity-0 group-hover:opacity-60 transition-opacity duration-300 pointer-events-none"></div>
                         </div>
-                    \`;
+                    `;
                 });
                 
                 portfolioGrid.innerHTML = itemsHtml;
