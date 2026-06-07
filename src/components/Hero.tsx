@@ -42,7 +42,7 @@ export default function Hero() {
           
           <div data-aos="fade-left" data-aos-delay="200" className="relative order-1 lg:order-2 mt-10 lg:mt-0">
             <div className="relative z-10 w-full aspect-video glass-card rounded-2xl border-2 border-gray-800 shadow-2xl flex items-center justify-center overflow-hidden group">
-               <img src="/assets/Works/image copy.png" alt="Restaurant Website Mockup" className="w-full h-full object-cover object-top group-hover:object-bottom transition-all duration-[5000ms] ease-linear" />
+               <img src="/assets/Works/Restaurants/Restaurant-1.png" alt="Restaurant Website Mockup" className="w-full h-full object-cover object-top group-hover:object-bottom transition-all duration-[5000ms] ease-linear" />
                <div className="absolute inset-0 bg-gradient-to-t from-dark/90 to-transparent"></div>
                <div className="absolute bottom-6 left-6 right-6">
                  <div className="glass-panel rounded-xl p-4 flex justify-between items-center shadow-2xl border border-white/10">

@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import fs from 'fs';
 import path from 'path';
+import CategoryGallery from './CategoryGallery';
 
 export default function PortfolioShowcase() {
   const worksDir = path.join(process.cwd(), 'public', 'assets', 'Works');
   
-  let categories: { name: string, images: string[] }[] = [];
+  const categories: { name: string, images: string[] }[] = [];
   
   try {
     if (fs.existsSync(worksDir)) {
@@ -45,35 +46,7 @@ export default function PortfolioShowcase() {
           <p className="text-gray-400 text-lg">We craft premium digital experiences that drive growth for all local businesses. Explore our works below.</p>
         </div>
 
-        {categories.length > 0 ? (
-          categories.map((category, catIndex) => (
-            <div key={catIndex} className="mb-20 last:mb-0">
-              <h3 className="text-2xl font-bold text-white mb-8 border-b border-gray-800 pb-4 inline-block pr-12" data-aos="fade-right">
-                <span className="text-primary mr-3">#</span> {category.name}
-              </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {category.images.map((imagePath, imgIndex) => (
-                  <div 
-                    key={imgIndex} 
-                    className="glass-card rounded-2xl overflow-hidden group border-gray-800 h-[450px] md:h-[600px] lg:h-[700px] relative"
-                    data-aos="fade-up"
-                    data-aos-delay={(imgIndex % 3) * 100}
-                  >
-                    <img 
-                      src={imagePath} 
-                      alt={`${category.name} Website`} 
-                      className="w-full h-full object-cover object-top transition-transform duration-[6000ms] ease-linear group-hover:object-bottom"
-                    />
-                    <div className="absolute inset-0 bg-dark/10 group-hover:bg-transparent transition-colors duration-500"></div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))
-        ) : (
-          <p className="text-center text-gray-500">No projects found in the Assets folder.</p>
-        )}
+        <CategoryGallery categories={categories} variant="showcase" />
         
         <div className="mt-16 text-center" data-aos="fade-up">
           <Link href="/portfolio" className="inline-flex items-center gap-2 text-gray-300 hover:text-primary transition font-medium border-b border-transparent hover:border-primary pb-1">
