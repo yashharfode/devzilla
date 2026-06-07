@@ -614,33 +614,56 @@
         });
     </script>
     <script>
-        // Dynamically render continuous sliding projects
+        // Dynamically render continuous sliding projects by checking file existence
         document.addEventListener("DOMContentLoaded", () => {
-            const projectImages = [
-                "assets/Works/image.png",
-                "assets/Works/image copy.png",
-                "assets/Works/image copy 2.png",
-                "assets/Works/image copy 3.png",
-                "assets/Works/image copy 4.png",
-                "assets/Works/image copy 5.png",
-                "assets/Works/ChatGPT Image Jun 7, 2026, 09_23_51 AM.png"
-            ];
-
             const portfolioSlider = document.getElementById('portfolio-slider');
             
-            let itemsHtml = '';
-            projectImages.forEach((img) => {
-                // Tall vertical card for full page screenshots
-                // object-top on default, object-bottom on hover creates a nice scrolling effect for tall images
-                itemsHtml += `
-                    <div class="w-[280px] md:w-[350px] lg:w-[400px] h-[500px] md:h-[600px] flex-shrink-0 rounded-2xl overflow-hidden border border-gray-800 shadow-2xl relative group bg-card">
-                        <img src="${img}" alt="Project Showcase" class="w-full h-full object-cover object-top transition-all duration-[4000ms] ease-linear group-hover:object-bottom opacity-90 group-hover:opacity-100">
-                    </div>
-                `;
+            // Define a large pool of possible image names that might exist in the folder.
+            // If an image is deleted from the folder, it will trigger onerror and simply won't be rendered.
+            const possibleImages = [];
+            possibleImages.push("assets/Works/image.png");
+            possibleImages.push("assets/Works/image copy.png");
+            for(let i=2; i<=20; i++) {
+                possibleImages.push(`assets/Works/image copy ${i}.png`);
+            }
+            possibleImages.push("assets/Works/ChatGPT Image Jun 7, 2026, 09_23_51 AM.png");
+
+            const validImages = [];
+            let itemsProcessed = 0;
+
+            possibleImages.forEach((imgSrc) => {
+                const img = new Image();
+                img.onload = function() {
+                    validImages.push(imgSrc);
+                    checkComplete();
+                };
+                img.onerror = function() {
+                    checkComplete();
+                };
+                img.src = imgSrc;
             });
-            
-            // Duplicate the items to create a seamless infinite loop
-            portfolioSlider.innerHTML = itemsHtml + itemsHtml;
+
+            function checkComplete() {
+                itemsProcessed++;
+                if (itemsProcessed === possibleImages.length) {
+                    renderSlider(validImages);
+                }
+            }
+
+            function renderSlider(images) {
+                if (images.length === 0) return;
+                let itemsHtml = '';
+                images.forEach((img) => {
+                    itemsHtml += `
+                        <div class="w-[280px] md:w-[350px] lg:w-[400px] h-[500px] md:h-[600px] flex-shrink-0 rounded-2xl overflow-hidden border border-gray-800 shadow-2xl relative group bg-card">
+                            <img src="${img}" alt="Project Showcase" class="w-full h-full object-cover object-top transition-all duration-[4000ms] ease-linear group-hover:object-bottom opacity-90 group-hover:opacity-100">
+                        </div>
+                    `;
+                });
+                
+                // Duplicate the items to create a seamless infinite loop
+                portfolioSlider.innerHTML = itemsHtml + itemsHtml;
+            }
         });
     </script>
 </body>
