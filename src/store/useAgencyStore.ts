@@ -19,8 +19,12 @@ export type ClientDocument = {
       hostingProvider: 'devzilla' | 'client';
       domainStatus: 'new' | 'owned';
       durationYears: number;
+      domainName: string;
+      domainYearlyCost: number;
     };
     finalPrice: number;
+    oneTimePrice: number;
+    recurringPrice: number;
   };
   privateView: {
     baseCost: number;
@@ -66,17 +70,23 @@ const recalculatePrices = (client: ClientDocument): ClientDocument => {
 
   const infra = client.publicView.infrastructure;
   const hostingCost = infra.hostingProvider === 'devzilla' ? 3000 * infra.durationYears : 0;
-  const domainCost = infra.domainStatus === 'new' ? 1000 * infra.durationYears : 0;
+  const domainCost = infra.domainStatus === 'new' ? infra.domainYearlyCost * infra.durationYears : 0;
   const infrastructureCost = hostingCost + domainCost;
 
-  const baseCost = basePrice - deductions + addonsPrice + customFeaturesPrice + infrastructureCost;
-  const finalPrice = Math.max(0, baseCost - totalDiscounts);
+  const baseCostWithoutInfra = basePrice - deductions + addonsPrice + customFeaturesPrice;
+  const oneTimePrice = Math.max(0, baseCostWithoutInfra - totalDiscounts);
+  const recurringPrice = infrastructureCost;
+  
+  const baseCost = baseCostWithoutInfra + infrastructureCost;
+  const finalPrice = oneTimePrice + recurringPrice;
 
   return {
     ...client,
     publicView: {
       ...client.publicView,
       finalPrice,
+      oneTimePrice,
+      recurringPrice,
     },
     privateView: {
       ...client.privateView,
@@ -99,8 +109,10 @@ export const useAgencyStore = create<AgencyState>((set) => ({
         uncheckedSubFeatures: [], 
         customFeatures: [], 
         selectedAddons: ['online_ordering'], 
-        infrastructure: { hostingProvider: 'devzilla', domainStatus: 'new', durationYears: 1 },
-        finalPrice: 28999 
+        infrastructure: { hostingProvider: 'devzilla', domainStatus: 'new', durationYears: 1, domainName: '', domainYearlyCost: 1000 },
+        finalPrice: 28999,
+        oneTimePrice: 24999,
+        recurringPrice: 4000
       },
       privateView: { baseCost: 28999, discounts: [{ id: 'd1', amount: 2000, reason: 'Early close' }], margin: 26999, internalNotes: 'High priority', followUpSchedule: '3_days' }
     },
@@ -114,8 +126,10 @@ export const useAgencyStore = create<AgencyState>((set) => ({
         uncheckedSubFeatures: [], 
         customFeatures: [], 
         selectedAddons: ['payment_gateway', 'admin_panel'], 
-        infrastructure: { hostingProvider: 'client', domainStatus: 'owned', durationYears: 1 },
-        finalPrice: 31999 
+        infrastructure: { hostingProvider: 'client', domainStatus: 'owned', durationYears: 1, domainName: '', domainYearlyCost: 1000 },
+        finalPrice: 31999,
+        oneTimePrice: 31999,
+        recurringPrice: 0
       },
       privateView: { baseCost: 31999, discounts: [], margin: 31999, internalNotes: 'Budget strict', followUpSchedule: '7_days' }
     }
@@ -133,8 +147,10 @@ export const useAgencyStore = create<AgencyState>((set) => ({
         uncheckedSubFeatures: [],
         customFeatures: [],
         selectedAddons: [],
-        infrastructure: { hostingProvider: 'devzilla', domainStatus: 'new', durationYears: 1 },
+        infrastructure: { hostingProvider: 'devzilla', domainStatus: 'new', durationYears: 1, domainName: '', domainYearlyCost: 1000 },
         finalPrice: BasePackages['basic_bhojnalaya'].price + 4000, // +4000 for 1yr domain & hosting
+        oneTimePrice: BasePackages['basic_bhojnalaya'].price,
+        recurringPrice: 4000,
       },
       privateView: {
         baseCost: BasePackages['basic_bhojnalaya'].price + 4000,
@@ -158,8 +174,10 @@ export const useAgencyStore = create<AgencyState>((set) => ({
         uncheckedSubFeatures: [],
         customFeatures: [],
         selectedAddons: [],
-        infrastructure: { hostingProvider: 'devzilla', domainStatus: 'new', durationYears: 1 },
+        infrastructure: { hostingProvider: 'devzilla', domainStatus: 'new', durationYears: 1, domainName: '', domainYearlyCost: 1000 },
         finalPrice: BasePackages['basic_bhojnalaya'].price + 4000,
+        oneTimePrice: BasePackages['basic_bhojnalaya'].price,
+        recurringPrice: 4000,
       },
       privateView: {
         baseCost: BasePackages['basic_bhojnalaya'].price + 4000,

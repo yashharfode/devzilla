@@ -16,6 +16,11 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
 
   const [customName, setCustomName] = useState('');
   const [customPrice, setCustomPrice] = useState('');
+  
+  // Domain Search State
+  const [domainQuery, setDomainQuery] = useState('');
+  const [isCheckingDomain, setIsCheckingDomain] = useState(false);
+  const [domainResult, setDomainResult] = useState<{available: boolean, price: number} | null>(null);
 
   useEffect(() => {
     if (!currentClient || currentClient.id !== clientId) {
@@ -39,6 +44,32 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
       addCustomFeature(customName, Number(customPrice));
       setCustomName('');
       setCustomPrice('');
+    }
+  };
+
+  const handleCheckDomain = async () => {
+    if (!domainQuery.trim()) return;
+    setIsCheckingDomain(true);
+    setDomainResult(null);
+    try {
+      const res = await fetch('/api/check-domain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ domain: domainQuery })
+      });
+      const data = await res.json();
+      setDomainResult(data);
+      if (data.available) {
+        updateInfrastructure({ 
+          domainName: domainQuery, 
+          domainYearlyCost: data.price,
+          domainStatus: 'new' 
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsCheckingDomain(false);
     }
   };
 
@@ -293,6 +324,40 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
                 Client Provided<br/>
                 <span className="text-xs font-mono font-normal mt-1 block">₹0/yr</span>
               </button>
+            </div>
+
+            {/* Real-time Domain Search */}
+            <div className="mt-6 pt-6 border-t border-gray-100">
+              <h5 className="font-bold text-[#1e293b] mb-3 text-xs uppercase tracking-wider">Check Domain Availability</h5>
+              <div className="flex gap-2 mb-3">
+                <input 
+                  type="text" 
+                  placeholder="e.g. tiwarihospital.com" 
+                  className="flex-1 bg-[#f8fafc] border border-gray-200 text-[#1e293b] rounded-xl px-4 py-2 focus:outline-none focus:border-[#0d9488] text-sm font-mono"
+                  value={domainQuery}
+                  onChange={(e) => setDomainQuery(e.target.value.toLowerCase())}
+                  onKeyDown={(e) => e.key === 'Enter' && handleCheckDomain()}
+                />
+                <button 
+                  onClick={handleCheckDomain}
+                  disabled={isCheckingDomain || !domainQuery.trim()}
+                  className="bg-[#1e293b] hover:bg-[#0f172a] text-white px-4 py-2 rounded-xl text-sm font-bold transition disabled:opacity-50"
+                >
+                  {isCheckingDomain ? <i className="fa-solid fa-circle-notch fa-spin"></i> : 'Check'}
+                </button>
+              </div>
+
+              {domainResult && (
+                <div className={`p-3 rounded-lg text-sm font-bold flex items-center justify-between ${domainResult.available ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+                  <div className="flex items-center gap-2">
+                    <i className={`fa-solid ${domainResult.available ? 'fa-check-circle' : 'fa-times-circle'}`}></i>
+                    <span>{domainResult.available ? 'Available!' : 'Not Available'}</span>
+                  </div>
+                  {domainResult.available && (
+                    <span className="font-mono">₹{domainResult.price.toLocaleString('en-IN')}/yr</span>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 

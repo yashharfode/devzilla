@@ -1,8 +1,10 @@
 'use client';
 import { useState } from 'react';
 import { useAgencyStore } from '../../../store/useAgencyStore';
+import { BasePackages, ModularAddons } from '../../../config/pricingDictionary';
 import { toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export default function ConsultationFooter() {
   const { currentClient } = useAgencyStore();
@@ -10,19 +12,17 @@ export default function ConsultationFooter() {
 
   if (!currentClient) return null;
 
-  const handleGeneratePDF = async () => {
+  const handleGenerateBlueprint = async () => {
     setIsGenerating(true);
     try {
       const element = document.getElementById('blueprint-content');
       if (!element) throw new Error("Content not found");
 
-      // html-to-image supports modern CSS (like Tailwind v4 oklch/lab colors) perfectly
       const imgData = await toPng(element, {
-        backgroundColor: '#020510',
+        backgroundColor: '#f8fafc', // Light mode bg
         pixelRatio: 2,
       });
 
-      // Create an image element to get the native dimensions
       const img = new Image();
       img.src = imgData;
       await new Promise((resolve) => {
@@ -30,21 +30,16 @@ export default function ConsultationFooter() {
       });
 
       const pdf = new jsPDF('p', 'mm', 'a4');
-      
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (img.height * pdfWidth) / img.width;
       
-      pdf.setFillColor(6, 11, 31); 
+      pdf.setFillColor(13, 148, 136); // Deep Teal Header
       pdf.rect(0, 0, pdfWidth, 20, 'F');
       pdf.setTextColor(255, 255, 255);
       pdf.setFontSize(14);
-      pdf.text(`DevZilla Digital Blueprint | Client ID: ${currentClient.id}`, 10, 14);
+      pdf.text(`DevZilla Digital Blueprint | Client: ${currentClient.clientName}`, 10, 14);
 
       pdf.addImage(imgData, 'PNG', 0, 25, pdfWidth, pdfHeight);
-      
-      // If the image is longer than A4, jspdf will squish or truncate it depending on coordinates. 
-      // For now, scaling it to width is standard for single page exports.
-      
       pdf.save(`DevZilla_Blueprint_${currentClient.id}.pdf`);
     } catch (error) {
       console.error("PDF Generation failed", error);
@@ -53,28 +48,131 @@ export default function ConsultationFooter() {
     }
   };
 
+  const handlePrintProposal = () => {
+    const doc = new jsPDF();
+    
+    // Header
+    doc.setFontSize(24);
+    doc.setTextColor(30, 41, 59);
+    doc.text("DevZilla Agency", 14, 20);
+    
+    doc.setFontSize(12);
+    doc.setTextColor(100, 116, 139);
+    doc.text("Official Project Proposal", 14, 28);
+    
+    // Client Info
+    doc.setFontSize(10);
+    doc.setTextColor(30, 41, 59);
+    doc.text(`Client: ${currentClient.clientName}`, 14, 45);
+    doc.text(`Business: ${currentClient.businessName}`, 14, 51);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 57);
+
+    // Prepare Table Data
+    const tableBody = [];
+    
+    const basePkg = BasePackages[currentClient.publicView.basePackage];
+    tableBody.push([{ content: `Base Package: ${basePkg.name}`, styles: { fontStyle: 'bold' } }, `INR ${basePkg.price.toLocaleString('en-IN')}`]);
+    
+    currentClient.publicView.uncheckedSubFeatures.forEach(subId => {
+      const feat = basePkg.features.find(f => f.id === subId);
+      if (feat) {
+        tableBody.push([`  - Removed: ${feat.name}`, `-INR ${feat.deductionValue.toLocaleString('en-IN')}`]);
+      }
+    });
+
+    currentClient.publicView.selectedAddons.forEach(addonId => {
+      const addon = ModularAddons[addonId];
+      if (addon) {
+        tableBody.push([`Add-on: ${addon.name}`, `INR ${addon.price.toLocaleString('en-IN')}`]);
+      }
+    });
+
+    currentClient.publicView.customFeatures.forEach(cf => {
+      tableBody.push([`Custom: ${cf.name}`, `INR ${cf.price.toLocaleString('en-IN')}`]);
+    });
+    
+    tableBody.push([{ content: 'Total One-Time Setup', styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } }, { content: `INR ${currentClient.publicView.oneTimePrice.toLocaleString('en-IN')}`, styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } }]);
+
+    const infra = currentClient.publicView.infrastructure;
+    if (infra.hostingProvider === 'devzilla' || infra.domainStatus === 'new') {
+       tableBody.push([{ content: `Infrastructure (${infra.durationYears} Year${infra.durationYears > 1 ? 's' : ''})`, styles: { fontStyle: 'bold', textColor: [13, 148, 136] } }, '']);
+       if (infra.hostingProvider === 'devzilla') {
+         tableBody.push([`  Web Hosting (DevZilla Cloud)`, `INR ${(3000 * infra.durationYears).toLocaleString('en-IN')}`]);
+       }
+       if (infra.domainStatus === 'new') {
+         tableBody.push([`  Domain Name: ${infra.domainName || 'New Domain'}`, `INR ${(infra.domainYearlyCost * infra.durationYears).toLocaleString('en-IN')}`]);
+       }
+       tableBody.push([{ content: 'Total Recurring Infrastructure', styles: { fontStyle: 'bold', fillColor: [240, 253, 250] } }, { content: `INR ${currentClient.publicView.recurringPrice.toLocaleString('en-IN')}`, styles: { fontStyle: 'bold', fillColor: [240, 253, 250] } }]);
+    }
+
+    autoTable(doc, {
+      startY: 65,
+      head: [['Description', 'Amount']],
+      body: tableBody,
+      theme: 'grid',
+      headStyles: { fillColor: [30, 41, 59] },
+      columnStyles: { 1: { halign: 'right' } }
+    });
+
+    // @ts-expect-error - jspdf-autotable extends jsPDF type dynamically
+    const finalY = doc.lastAutoTable.finalY + 20;
+    doc.setFontSize(10);
+    doc.setTextColor(30, 41, 59);
+    doc.text("Terms & Conditions:", 14, finalY);
+    doc.setTextColor(100, 116, 139);
+    doc.setFontSize(8);
+    doc.text("1. 50% advance payment required to commence work.", 14, finalY + 6);
+    doc.text("2. Proposal valid for 15 days from the date of issue.", 14, finalY + 11);
+    doc.text("3. Infrastructure costs are recurring and must be renewed before expiry.", 14, finalY + 16);
+
+    doc.save(`Proposal_${currentClient.clientName.replace(/\s+/g, '_')}.pdf`);
+  };
+
   return (
     <div className="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-xl border-t border-gray-200 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-50 py-3 px-4 md:py-4">
-      <div className="max-w-6xl mx-auto flex justify-between items-center gap-4">
-        <div>
-          <div className="text-xs text-[#64748b] uppercase tracking-widest font-bold mb-0.5">Total Investment</div>
-          <div className="text-2xl md:text-3xl font-bold text-[#1e293b] font-mono flex items-baseline gap-2">
-            ₹{currentClient.publicView.finalPrice.toLocaleString('en-IN')}
-            <span className="text-xs text-[#64748b] font-sans tracking-normal font-medium">One-time setup</span>
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+        
+        {/* Split Totals */}
+        <div className="flex w-full md:w-auto justify-between md:justify-start gap-8">
+          <div>
+            <div className="text-[10px] text-[#64748b] uppercase tracking-widest font-bold mb-0.5">Website Setup</div>
+            <div className="text-xl md:text-2xl font-bold text-[#1e293b] font-mono">
+              ₹{currentClient.publicView.oneTimePrice.toLocaleString('en-IN')}
+              <span className="text-[10px] text-[#64748b] font-sans tracking-normal font-medium ml-1">One-time</span>
+            </div>
           </div>
+          {currentClient.publicView.recurringPrice > 0 && (
+            <div>
+              <div className="text-[10px] text-[#0d9488] uppercase tracking-widest font-bold mb-0.5">Infrastructure</div>
+              <div className="text-xl md:text-2xl font-bold text-[#0d9488] font-mono">
+                ₹{currentClient.publicView.recurringPrice.toLocaleString('en-IN')}
+                <span className="text-[10px] text-[#0d9488]/70 font-sans tracking-normal font-medium ml-1">/ {currentClient.publicView.infrastructure.durationYears} Yr{currentClient.publicView.infrastructure.durationYears > 1 ? 's' : ''}</span>
+              </div>
+            </div>
+          )}
         </div>
         
-        <button 
-          onClick={handleGeneratePDF}
-          disabled={isGenerating}
-          className={`w-full md:w-auto premium-btn font-bold px-6 py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 text-sm md:text-base ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
-        >
-          {isGenerating ? (
-            <><i className="fa-solid fa-spinner fa-spin"></i> Generating...</>
-          ) : (
-            <><i className="fa-solid fa-file-pdf"></i> Generate Blueprint</>
-          )}
-        </button>
+        <div className="flex w-full md:w-auto gap-3">
+          <button 
+            onClick={handlePrintProposal}
+            className="flex-1 md:flex-none bg-white border border-gray-300 text-[#1e293b] font-bold px-4 py-2.5 rounded-xl transition-all hover:bg-gray-50 flex items-center justify-center gap-2 text-sm md:text-base shadow-sm"
+          >
+            <i className="fa-solid fa-print"></i> Print Proposal
+          </button>
+          
+          <button 
+            onClick={handleGenerateBlueprint}
+            disabled={isGenerating}
+            className={`flex-1 md:flex-none premium-btn font-bold px-6 py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 text-sm md:text-base ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            {isGenerating ? (
+              <><i className="fa-solid fa-spinner fa-spin"></i> Generating...</>
+            ) : (
+              <><i className="fa-solid fa-image"></i> Visual Blueprint</>
+            )}
+          </button>
+        </div>
+
       </div>
     </div>
   );
