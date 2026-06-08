@@ -1,5 +1,5 @@
 export type BasePackageId = 'basic_bhojnalaya' | 'standard_restaurant' | 'premium_restaurant';
-export type AddonId = 'admin_panel' | 'online_ordering' | 'table_reservation' | 'whatsapp_bot' | 'advanced_seo' | 'payment_gateway' | 'multi_language' | 'live_chat';
+export type AddonId = 'admin_panel' | 'online_ordering' | 'table_reservation' | 'whatsapp_bot' | 'advanced_seo' | 'payment_gateway' | 'multi_language' | 'live_chat' | 'annual_maintenance';
 
 export type SubFeature = {
   id: string;
@@ -34,7 +34,7 @@ export const BasePackages: Record<BasePackageId, BasePackageConfig> = {
       { id: 'bhoj_speed', name: 'Speed Optimization', deductionValue: 1500 },
       { id: 'bhoj_social', name: 'Social Media Links', deductionValue: 500 }
     ],
-    freeServices: ['1 Yr Free Maintenance', 'Free SSL Certificate', 'Initial Content Upload']
+    freeServices: ['1 Month Free Maintenance', 'Free SSL Certificate', 'Initial Content Upload']
   },
   standard_restaurant: { 
     name: 'Standard', 
@@ -53,7 +53,7 @@ export const BasePackages: Record<BasePackageId, BasePackageConfig> = {
       { id: 'std_analytics', name: 'Google Analytics Setup', deductionValue: 1000 },
       { id: 'std_perf', name: 'Performance Optimization', deductionValue: 1500 }
     ],
-    freeServices: ['1 Yr Free Maintenance', 'Free SSL Certificate', 'Monthly Analytics Report', 'Free Minor Updates']
+    freeServices: ['2 Months Free Maintenance', 'Free SSL Certificate', 'Monthly Analytics Report', 'Free Minor Updates']
   },
   premium_restaurant: { 
     name: 'Premium', 
@@ -72,7 +72,7 @@ export const BasePackages: Record<BasePackageId, BasePackageConfig> = {
       { id: 'prem_anim', name: 'Custom Animations', deductionValue: 2000 },
       { id: 'prem_support', name: 'Priority Support', deductionValue: 2000 }
     ],
-    freeServices: ['Lifetime VIP Support', 'Dedicated Account Manager', 'Free Ad Campaign Setup', 'Unlimited Content Edits']
+    freeServices: ['3 Months Free Maintenance', 'Lifetime VIP Support', 'Dedicated Account Manager', 'Free Ad Campaign Setup', 'Unlimited Content Edits']
   }
 };
 
@@ -84,5 +84,6 @@ export const ModularAddons: Record<AddonId, { name: string; price: number; descr
   advanced_seo: { name: 'Advanced SEO Setup', price: 4500, description: 'Rank higher on Google searches' },
   payment_gateway: { name: 'Payment Gateway Integration', price: 2000, description: 'Accept online payments securely' },
   multi_language: { name: 'Multi-language Support', price: 3500, description: 'Reach a global audience' },
-  live_chat: { name: 'Live Chat Integration', price: 1500, description: 'Engage visitors in real-time' }
+  live_chat: { name: 'Live Chat Integration', price: 1500, description: 'Engage visitors in real-time' },
+  annual_maintenance: { name: 'Annual Maintenance Contract', price: 6000, description: 'Extended 1-Year Priority Support & Updates' }
 };
