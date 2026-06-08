@@ -73,6 +73,21 @@ export default function ConsultationFooter() {
     const basePkg = BasePackages[currentClient.publicView.basePackage];
     tableBody.push([{ content: `Base Package: ${basePkg.name}`, styles: { fontStyle: 'bold' } }, `INR ${basePkg.price.toLocaleString('en-IN')}`]);
     
+    // Included Features
+    basePkg.features.forEach(feat => {
+      if (!currentClient.publicView.uncheckedSubFeatures.includes(feat.id)) {
+        tableBody.push([`  ✓ ${feat.name}`, { content: 'Included', styles: { textColor: [100, 116, 139] } }]);
+      }
+    });
+
+    // Free Services
+    if (basePkg.freeServices && basePkg.freeServices.length > 0) {
+      basePkg.freeServices.forEach(free => {
+        tableBody.push([`  🎁 Free Bonus: ${free}`, { content: 'Included', styles: { textColor: [13, 148, 136], fontStyle: 'bold' } }]);
+      });
+    }
+    
+    // Removed Features
     currentClient.publicView.uncheckedSubFeatures.forEach(subId => {
       const feat = basePkg.features.find(f => f.id === subId);
       if (feat) {

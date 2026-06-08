@@ -336,7 +336,7 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
                 }`}
               >
                 Buy New<br/>
-                <span className="text-xs font-mono font-normal mt-1 block">₹1,000/yr</span>
+                <span className="text-xs font-mono font-normal mt-1 block">Custom/yr</span>
               </button>
               <button 
                 onClick={() => updateInfrastructure({ domainStatus: 'owned' })}
@@ -350,6 +350,22 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
                 <span className="text-xs font-mono font-normal mt-1 block">₹0/yr</span>
               </button>
             </div>
+
+            {publicView.infrastructure.domainStatus === 'new' && (
+              <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between gap-4">
+                <span className="text-xs font-bold text-[#64748b]">Enter Domain Price/Yr</span>
+                <div className="flex items-center gap-2 bg-[#f8fafc] border border-gray-200 rounded-lg px-3 py-1.5 w-1/2">
+                  <span className="text-[#64748b] font-mono font-bold text-sm">₹</span>
+                  <input 
+                    type="number"
+                    value={publicView.infrastructure.domainYearlyCost || ''}
+                    onChange={(e) => updateInfrastructure({ domainYearlyCost: Number(e.target.value) })}
+                    className="bg-transparent border-none w-full focus:outline-none text-sm font-mono font-bold text-[#1e293b]"
+                    placeholder="e.g. 1000"
+                  />
+                </div>
+              </div>
+            )}
           </div>
           
           {/* Duration Slider */}
