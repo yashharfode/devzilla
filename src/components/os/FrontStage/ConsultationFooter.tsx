@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useAgencyStore } from '../../../store/useAgencyStore';
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
 
 export default function ConsultationFooter() {
@@ -16,17 +16,23 @@ export default function ConsultationFooter() {
       const element = document.getElementById('blueprint-content');
       if (!element) throw new Error("Content not found");
 
-      const canvas = await html2canvas(element, {
-        scale: 2,
+      // html-to-image supports modern CSS (like Tailwind v4 oklch/lab colors) perfectly
+      const imgData = await toPng(element, {
         backgroundColor: '#020510',
-        useCORS: true,
+        pixelRatio: 2,
       });
 
-      const imgData = canvas.toDataURL('image/png');
+      // Create an image element to get the native dimensions
+      const img = new Image();
+      img.src = imgData;
+      await new Promise((resolve) => {
+        img.onload = resolve;
+      });
+
       const pdf = new jsPDF('p', 'mm', 'a4');
       
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pdfHeight = (img.height * pdfWidth) / img.width;
       
       pdf.setFillColor(6, 11, 31); 
       pdf.rect(0, 0, pdfWidth, 20, 'F');

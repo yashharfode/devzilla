@@ -43,7 +43,7 @@ export default function AdminDashboard() {
           
           {selectedClientId && (
             <div id="shadow-editor">
-              <ShadowEditor clientId={selectedClientId} />
+              <ShadowEditor key={selectedClientId} clientId={selectedClientId} />
             </div>
           )}
         </div>

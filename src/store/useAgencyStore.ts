@@ -3,11 +3,15 @@ import { BasePackageId, AddonId, BasePackages, ModularAddons } from '../config/p
 
 export type Discount = { id: string; amount: number; reason: string };
 
+export type CustomFeature = { id: string; name: string; price: number };
+
 export type ClientDocument = {
   id: string;
   industry: string;
   publicView: {
     basePackage: BasePackageId;
+    uncheckedSubFeatures: string[]; // Added
+    customFeatures: CustomFeature[]; // Added
     selectedAddons: AddonId[];
     finalPrice: number;
   };
@@ -27,6 +31,9 @@ interface AgencyState {
   selectClient: (id: string) => void;
   setIndustry: (industry: string) => void;
   setBasePackage: (pkg: BasePackageId) => void;
+  toggleSubFeature: (subId: string) => void; // Added
+  addCustomFeature: (name: string, price: number) => void; // Added
+  removeCustomFeature: (id: string) => void; // Added
   toggleAddon: (addon: AddonId) => void;
   addDiscount: (amount: number, reason: string) => void;
   removeDiscount: (id: string) => void;
@@ -35,11 +42,19 @@ interface AgencyState {
 }
 
 const recalculatePrices = (client: ClientDocument): ClientDocument => {
-  const basePrice = BasePackages[client.publicView.basePackage].price;
+  const basePkg = BasePackages[client.publicView.basePackage];
+  const basePrice = basePkg.price;
+  
+  const deductions = client.publicView.uncheckedSubFeatures.reduce((sum, subId) => {
+    const feature = basePkg.features.find(f => f.id === subId);
+    return sum + (feature ? feature.deductionValue : 0);
+  }, 0);
+
   const addonsPrice = client.publicView.selectedAddons.reduce((sum, addonId) => sum + ModularAddons[addonId].price, 0);
+  const customFeaturesPrice = client.publicView.customFeatures.reduce((sum, cf) => sum + cf.price, 0);
   const totalDiscounts = client.privateView.discounts.reduce((sum, d) => sum + d.amount, 0);
 
-  const baseCost = basePrice + addonsPrice;
+  const baseCost = basePrice - deductions + addonsPrice + customFeaturesPrice;
   const finalPrice = Math.max(0, baseCost - totalDiscounts);
 
   return {
@@ -62,13 +77,13 @@ export const useAgencyStore = create<AgencyState>((set) => ({
     {
       id: 'demo-client-1',
       industry: 'Restaurant',
-      publicView: { basePackage: 'standard_business', selectedAddons: ['online_ordering'], finalPrice: 23000 },
+      publicView: { basePackage: 'standard_business', uncheckedSubFeatures: [], customFeatures: [], selectedAddons: ['online_ordering'], finalPrice: 23000 },
       privateView: { baseCost: 23000, discounts: [{ id: 'd1', amount: 2000, reason: 'Early close' }], margin: 21000, internalNotes: 'High priority', followUpSchedule: '3_days' }
     },
     {
       id: 'demo-client-2',
       industry: 'E-Commerce',
-      publicView: { basePackage: 'ecommerce', selectedAddons: ['payment_gateway', 'admin_panel'], finalPrice: 32000 },
+      publicView: { basePackage: 'ecommerce', uncheckedSubFeatures: [], customFeatures: [], selectedAddons: ['payment_gateway', 'admin_panel'], finalPrice: 32000 },
       privateView: { baseCost: 32000, discounts: [], margin: 32000, internalNotes: 'Budget strict', followUpSchedule: '7_days' }
     }
   ],
@@ -79,6 +94,8 @@ export const useAgencyStore = create<AgencyState>((set) => ({
       industry: 'General',
       publicView: {
         basePackage: 'landing_page',
+        uncheckedSubFeatures: [],
+        customFeatures: [],
         selectedAddons: [],
         finalPrice: BasePackages['landing_page'].price,
       },
@@ -99,6 +116,48 @@ export const useAgencyStore = create<AgencyState>((set) => ({
       return { currentClient: { ...client } };
     }
     return state;
+  }),
+
+  toggleSubFeature: (subId) => set((state) => {
+    if (!state.currentClient) return state;
+    const currentUnchecked = state.currentClient.publicView.uncheckedSubFeatures;
+    const newUnchecked = currentUnchecked.includes(subId)
+      ? currentUnchecked.filter(id => id !== subId)
+      : [...currentUnchecked, subId];
+
+    return {
+      currentClient: recalculatePrices({
+        ...state.currentClient,
+        publicView: { ...state.currentClient.publicView, uncheckedSubFeatures: newUnchecked }
+      })
+    };
+  }),
+
+  addCustomFeature: (name, price) => set((state) => {
+    if (!state.currentClient) return state;
+    const newFeature = { id: Date.now().toString(), name, price };
+    return {
+      currentClient: recalculatePrices({
+        ...state.currentClient,
+        publicView: { 
+          ...state.currentClient.publicView, 
+          customFeatures: [...state.currentClient.publicView.customFeatures, newFeature] 
+        }
+      })
+    };
+  }),
+
+  removeCustomFeature: (id) => set((state) => {
+    if (!state.currentClient) return state;
+    return {
+      currentClient: recalculatePrices({
+        ...state.currentClient,
+        publicView: { 
+          ...state.currentClient.publicView, 
+          customFeatures: state.currentClient.publicView.customFeatures.filter(f => f.id !== id) 
+        }
+      })
+    };
   }),
 
   setIndustry: (industry) => set((state) => {

@@ -7,18 +7,11 @@ export default function ShadowEditor({ clientId }: { clientId: string }) {
   
   const [discountAmt, setDiscountAmt] = useState('');
   const [discountReason, setDiscountReason] = useState('');
-  const [notes, setNotes] = useState('');
-
-  // Sync state when clientId changes
-  useEffect(() => {
-    if (!currentClient || currentClient.id !== clientId) {
-      selectClient(clientId);
-    } else {
-      setNotes(currentClient.privateView.internalNotes || '');
-    }
-  }, [clientId, currentClient, selectClient]);
+  const [notes, setNotes] = useState(currentClient?.privateView.internalNotes || '');
 
   if (!currentClient || currentClient.id !== clientId) {
+    // This will trigger a re-render from the store if it's missing, but we handle selection manually usually
+    selectClient(clientId);
     return <div className="text-gray-500 animate-pulse p-6">Loading Shadow Editor...</div>;
   }
 

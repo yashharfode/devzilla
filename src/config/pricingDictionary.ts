@@ -1,10 +1,55 @@
 export type BasePackageId = 'landing_page' | 'standard_business' | 'ecommerce';
 export type AddonId = 'admin_panel' | 'online_ordering' | 'table_reservation' | 'whatsapp_bot' | 'advanced_seo' | 'payment_gateway' | 'multi_language' | 'live_chat';
 
-export const BasePackages: Record<BasePackageId, { name: string; price: number; description: string }> = {
-  landing_page: { name: 'Landing Page / Single Page', price: 8000, description: 'High-converting single page website' },
-  standard_business: { name: 'Standard Business (5 Pages)', price: 15000, description: 'Complete corporate presence' },
-  ecommerce: { name: 'E-Commerce / Advanced App', price: 25000, description: 'Full digital storefront and catalog' }
+export type SubFeature = {
+  id: string;
+  name: string;
+  deductionValue: number;
+};
+
+export type BasePackageConfig = {
+  name: string;
+  price: number;
+  description: string;
+  features: SubFeature[];
+};
+
+export const BasePackages: Record<BasePackageId, BasePackageConfig> = {
+  landing_page: { 
+    name: 'Landing Page / Single Page', 
+    price: 8000, 
+    description: 'High-converting single page website',
+    features: [
+      { id: 'lp_design', name: 'Premium UI/UX Design', deductionValue: 3000 },
+      { id: 'lp_copy', name: 'Copywriting Assistance', deductionValue: 1500 },
+      { id: 'lp_contact', name: 'Lead Capture Form', deductionValue: 1000 },
+      { id: 'lp_hosting', name: '1 Year Free Hosting', deductionValue: 2000 }
+    ]
+  },
+  standard_business: { 
+    name: 'Standard Business (5 Pages)', 
+    price: 15000, 
+    description: 'Complete corporate presence',
+    features: [
+      { id: 'std_pages', name: '5 Core Pages (Home, About...)', deductionValue: 4000 },
+      { id: 'std_seo', name: 'Basic On-page SEO', deductionValue: 2000 },
+      { id: 'std_contact', name: 'Advanced Contact Form', deductionValue: 1500 },
+      { id: 'std_gallery', name: 'Dynamic Portfolio/Gallery', deductionValue: 2000 },
+      { id: 'std_hosting', name: '1 Yr Free Hosting + Domain', deductionValue: 3000 }
+    ]
+  },
+  ecommerce: { 
+    name: 'E-Commerce / Advanced App', 
+    price: 25000, 
+    description: 'Full digital storefront and catalog',
+    features: [
+      { id: 'ecom_catalog', name: 'Product Catalog (Up to 50)', deductionValue: 5000 },
+      { id: 'ecom_cart', name: 'Cart & Checkout Flow', deductionValue: 4000 },
+      { id: 'ecom_payment', name: 'Basic Payment Setup', deductionValue: 2000 },
+      { id: 'ecom_user', name: 'User Auth & Profiles', deductionValue: 3000 },
+      { id: 'ecom_hosting', name: 'Premium Cloud Hosting', deductionValue: 4000 }
+    ]
+  }
 };
 
 export const ModularAddons: Record<AddonId, { name: string; price: number; description: string }> = {
