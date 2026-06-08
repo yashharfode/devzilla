@@ -2,7 +2,7 @@
 import { useAgencyStore } from '../../../store/useAgencyStore';
 import Link from 'next/link';
 
-export default function MasterCRM() {
+export default function MasterCRM({ onSelectClient }: { onSelectClient?: (id: string) => void }) {
   const { clients } = useAgencyStore();
 
   return (
@@ -63,7 +63,17 @@ export default function MasterCRM() {
                     <Link href={`/consultation/${client.id}`} target="_blank" className="text-gray-400 hover:text-primary transition" title="View Consultation Front-Stage">
                       <i className="fa-solid fa-eye"></i>
                     </Link>
-                    <button className="text-gray-400 hover:text-white transition" title="Open Shadow Editor">
+                    <button 
+                      onClick={() => {
+                        if (onSelectClient) {
+                          onSelectClient(client.id);
+                          setTimeout(() => {
+                            document.getElementById('shadow-editor')?.scrollIntoView({ behavior: 'smooth' });
+                          }, 100);
+                        }
+                      }}
+                      className="text-gray-400 hover:text-white transition" title="Open Shadow Editor"
+                    >
                       <i className="fa-solid fa-pen-to-square"></i>
                     </button>
                   </div>

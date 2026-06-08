@@ -22,8 +22,9 @@ export type ClientDocument = {
 
 interface AgencyState {
   currentClient: ClientDocument | null;
-  clients: ClientDocument[]; // Added for CRM
+  clients: ClientDocument[]; 
   initClient: (id: string) => void;
+  selectClient: (id: string) => void;
   setIndustry: (industry: string) => void;
   setBasePackage: (pkg: BasePackageId) => void;
   toggleAddon: (addon: AddonId) => void;
@@ -90,6 +91,14 @@ export const useAgencyStore = create<AgencyState>((set) => ({
       }
     };
     return { currentClient: initialClient };
+  }),
+
+  selectClient: (id) => set((state) => {
+    const client = state.clients.find(c => c.id === id);
+    if (client) {
+      return { currentClient: { ...client } };
+    }
+    return state;
   }),
 
   setIndustry: (industry) => set((state) => {

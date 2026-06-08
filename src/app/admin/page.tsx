@@ -1,9 +1,14 @@
+'use client';
+import { useState } from 'react';
 import MasterCRM from '../../components/os/BackStage/MasterCRM';
+import ShadowEditor from '../../components/os/BackStage/ShadowEditor';
 import Link from 'next/link';
 
 export default function AdminDashboard() {
+  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
+
   return (
-    <div className="min-h-screen bg-[#020510] font-sans selection:bg-primary/30">
+    <div className="min-h-screen bg-[#020510] font-sans selection:bg-primary/30 pb-20">
       <nav className="border-b border-gray-800 bg-[#060b1f]/90 backdrop-blur-md sticky top-0 z-50 py-4 shadow-xl">
         <div className="container mx-auto px-6 flex justify-between items-center">
           <div className="text-xl font-bold flex items-center gap-3 text-white">
@@ -33,10 +38,14 @@ export default function AdminDashboard() {
         </div>
 
         <div className="space-y-8">
-          {/* Master CRM Table */}
-          <MasterCRM />
+          {/* We pass a callback so the table can tell us which client to edit */}
+          <MasterCRM onSelectClient={setSelectedClientId} />
           
-          {/* We will add Shadow Editor integration later */}
+          {selectedClientId && (
+            <div id="shadow-editor">
+              <ShadowEditor clientId={selectedClientId} />
+            </div>
+          )}
         </div>
       </main>
     </div>
