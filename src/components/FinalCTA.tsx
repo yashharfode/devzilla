@@ -22,13 +22,13 @@ export default function FinalCTA() {
           
           <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
             <Link 
-              href="https://wa.me/919244161044" 
+              href="https://wa.me/919244161034" 
               className="bg-gradient-primary text-dark font-bold px-10 py-5 rounded-2xl text-lg hover:scale-105 transition-transform shadow-[0_0_30px_rgba(244,185,66,0.4)] w-full sm:w-auto flex items-center justify-center gap-3"
             >
               <i className="fa-brands fa-whatsapp text-2xl"></i> WhatsApp Us Now
             </Link>
             <Link 
-              href="tel:+919244161044" 
+              href="tel:+919244161034" 
               className="glass-panel text-white font-bold px-10 py-5 rounded-2xl text-lg hover:bg-white/10 transition-colors w-full sm:w-auto flex items-center justify-center gap-3"
             >
               <i className="fa-solid fa-phone"></i> Book Free Consultation

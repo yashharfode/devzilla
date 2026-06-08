@@ -35,7 +35,7 @@ export default function Navbar() {
           <Link href="/#features" className="hover:text-white transition">Features</Link>
         </div>
         
-        <Link href="https://wa.me/919244161044" className="hidden md:inline-block bg-gradient-primary px-6 py-2 rounded-full font-medium text-sm hover:glow transition">
+        <Link href="https://wa.me/919244161034" className="hidden md:inline-block bg-gradient-primary px-6 py-2 rounded-full font-medium text-sm hover:glow transition">
           Get A Free Quote <i className="fa-solid fa-arrow-right ml-1"></i>
         </Link>
 
@@ -55,7 +55,7 @@ export default function Navbar() {
           <Link href="/portfolio" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-white font-medium mobile-link">Portfolio</Link>
           <Link href="/#pricing" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-white font-medium mobile-link">Pricing</Link>
           <Link href="/#features" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-white font-medium mobile-link">Features</Link>
-          <Link href="https://wa.me/919244161044" onClick={() => setIsMobileMenuOpen(false)} className="bg-gradient-primary px-6 py-2 rounded-full font-medium text-sm text-center mobile-link mt-2">Get A Free Quote</Link>
+          <Link href="https://wa.me/919244161034" onClick={() => setIsMobileMenuOpen(false)} className="bg-gradient-primary px-6 py-2 rounded-full font-medium text-sm text-center mobile-link mt-2">Get A Free Quote</Link>
         </div>
       )}
     </nav>

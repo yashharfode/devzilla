@@ -192,7 +192,7 @@ export default function Pricing() {
                 ))}
               </ul>
               
-              <Link href={`https://wa.me/919244161044?text=Hi, I am interested in the ${plan.name} Plan for my business.`} className={`w-full block text-center py-3 rounded-xl font-bold transition-all ${plan.highlight ? 'bg-gradient-primary text-dark hover:scale-105 shadow-[0_0_15px_rgba(244,185,66,0.4)]' : 'border border-gray-700 text-white hover:bg-gray-800'}`}>
+              <Link href={`https://wa.me/919244161034?text=Hi, I am interested in the ${plan.name} Plan for my business.`} className={`w-full block text-center py-3 rounded-xl font-bold transition-all ${plan.highlight ? 'bg-gradient-primary text-dark hover:scale-105 shadow-[0_0_15px_rgba(244,185,66,0.4)]' : 'border border-gray-700 text-white hover:bg-gray-800'}`}>
                 Choose {plan.name}
               </Link>
             </div>

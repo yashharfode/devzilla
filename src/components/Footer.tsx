@@ -40,11 +40,11 @@ export default function Footer() {
           <div>
             <h4 className="font-bold mb-6">Contact Us</h4>
             <ul className="space-y-4 text-sm font-medium">
-              <li><a href="tel:+919244161044" className="flex items-center gap-3 text-white hover:text-primary transition"><div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-primary"><i className="fa-solid fa-phone"></i></div> Call Now</a></li>
-              <li><a href="https://wa.me/919244161044" className="flex items-center gap-3 text-white hover:text-green-500 transition"><div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-green-500"><i className="fa-brands fa-whatsapp"></i></div> WhatsApp</a></li>
+              <li><a href="tel:+919244161034" className="flex items-center gap-3 text-white hover:text-primary transition"><div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-primary"><i className="fa-solid fa-phone"></i></div> Call Now</a></li>
+              <li><a href="https://wa.me/919244161034" className="flex items-center gap-3 text-white hover:text-green-500 transition"><div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-green-500"><i className="fa-brands fa-whatsapp"></i></div> WhatsApp</a></li>
               <li><a href="mailto:info@devzilla.com" className="flex items-center gap-3 text-white hover:text-blue-400 transition"><div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-blue-400"><i className="fa-solid fa-envelope"></i></div> Email</a></li>
             </ul>
-            <a href="https://wa.me/919244161044" className="inline-block mt-6 px-6 py-2 rounded-lg border border-primary text-primary hover:bg-primary hover:text-dark transition text-sm font-bold">Book a Free Consultation</a>
+            <a href="https://wa.me/919244161034" className="inline-block mt-6 px-6 py-2 rounded-lg border border-primary text-primary hover:bg-primary hover:text-dark transition text-sm font-bold">Book a Free Consultation</a>
           </div>
         </div>
         <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">

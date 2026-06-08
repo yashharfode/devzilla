@@ -24,7 +24,7 @@ export default function Hero() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 mb-10">
-              <Link href="https://wa.me/919244161044" className="bg-gradient-primary text-dark font-bold px-8 py-4 rounded-xl text-center hover:scale-105 transition-transform shadow-[0_0_20px_rgba(244,185,66,0.4)]">
+              <Link href="https://wa.me/919244161034" className="bg-gradient-primary text-dark font-bold px-8 py-4 rounded-xl text-center hover:scale-105 transition-transform shadow-[0_0_20px_rgba(244,185,66,0.4)]">
                 Get Free Consultation
               </Link>
               <Link href="/portfolio" className="glass-panel text-white font-bold px-8 py-4 rounded-xl text-center hover:bg-white/10 transition-colors">
