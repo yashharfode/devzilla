@@ -4,8 +4,15 @@ import { useEffect, useState } from 'react';
 import { useAgencyStore } from '../../../store/useAgencyStore';
 import { BasePackages, ModularAddons, BasePackageId, AddonId } from '../../../config/pricingDictionary';
 
+const PREBUILT_CUSTOMS = [
+  { name: 'Logo Design & Branding', price: 15000 },
+  { name: 'Advanced SEO Setup', price: 12000 },
+  { name: 'Copywriting (5 pages)', price: 8000 },
+  { name: 'Payment Gateway Integration', price: 5000 },
+];
+
 export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
-  const { currentClient, initClient, setIndustry, setBasePackage, toggleAddon, toggleSubFeature, addCustomFeature, removeCustomFeature } = useAgencyStore();
+  const { currentClient, initClient, setIndustry, setBasePackage, toggleAddon, toggleSubFeature, addCustomFeature, removeCustomFeature, updateCustomFeature } = useAgencyStore();
 
   const [customName, setCustomName] = useState('');
   const [customPrice, setCustomPrice] = useState('');
@@ -93,30 +100,28 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
                   <p className="text-sm text-[#64748b] font-medium leading-relaxed">{pkg.description}</p>
                 </div>
 
-                {isActive && (
-                  <div className="mt-8 pt-6 border-t border-gray-100 space-y-4">
-                    <h5 className="text-[10px] text-[#64748b] font-bold uppercase tracking-widest mb-4">Included Core Features</h5>
-                    {pkg.features.map(f => {
-                      const isUnchecked = publicView.uncheckedSubFeatures.includes(f.id);
-                      return (
-                        <div key={f.id} className="flex items-start gap-3 group">
-                          <button 
-                            onClick={(e) => { e.stopPropagation(); toggleSubFeature(f.id); }}
-                            className={`w-5 h-5 rounded flex-shrink-0 mt-0.5 flex items-center justify-center border transition-all shadow-sm ${
-                              !isUnchecked ? 'bg-[#0d9488] border-[#0d9488] text-white' : 'bg-white border-gray-300 text-transparent hover:border-[#0d9488]/50'
-                            }`}
-                          >
-                            <i className="fa-solid fa-check text-[10px]"></i>
-                          </button>
-                          <div className="cursor-pointer" onClick={() => toggleSubFeature(f.id)}>
-                            <p className={`text-sm font-medium transition-colors ${!isUnchecked ? 'text-[#1e293b] group-hover:text-black' : 'text-gray-400 line-through'}`}>{f.name}</p>
-                            {isUnchecked && <p className="text-xs text-red-500 mt-1 font-mono">-₹{f.deductionValue.toLocaleString('en-IN')} (Removed)</p>}
-                          </div>
+                <div className={`mt-8 pt-6 border-t border-gray-100 space-y-4 transition-opacity ${isActive ? 'opacity-100' : 'opacity-60 grayscale'}`}>
+                  <h5 className="text-[10px] text-[#64748b] font-bold uppercase tracking-widest mb-4">Included Core Features</h5>
+                  {pkg.features.map(f => {
+                    const isUnchecked = publicView.uncheckedSubFeatures.includes(f.id);
+                    return (
+                      <div key={f.id} className="flex items-start gap-3 group">
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); toggleSubFeature(f.id); }}
+                          className={`w-5 h-5 rounded flex-shrink-0 mt-0.5 flex items-center justify-center border transition-all shadow-sm ${
+                            !isUnchecked ? 'bg-[#0d9488] border-[#0d9488] text-white' : 'bg-white border-gray-300 text-transparent hover:border-[#0d9488]/50'
+                          }`}
+                        >
+                          <i className="fa-solid fa-check text-[10px]"></i>
+                        </button>
+                        <div className="cursor-pointer" onClick={() => toggleSubFeature(f.id)}>
+                          <p className={`text-sm font-medium transition-colors ${!isUnchecked ? 'text-[#1e293b] group-hover:text-black' : 'text-gray-400 line-through'}`}>{f.name}</p>
+                          {isUnchecked && <p className="text-xs text-red-500 mt-1 font-mono">-₹{f.deductionValue.toLocaleString('en-IN')} (Removed)</p>}
                         </div>
-                      )
-                    })}
-                  </div>
-                )}
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
             );
           })}
@@ -165,25 +170,49 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
           <span className="text-[#0d9488] mr-3">3.</span> Custom Requirements
         </h3>
         
-        <div className="space-y-3 max-w-3xl">
+        <div className="space-y-4 max-w-3xl">
+          {/* Pre-built Suggestions */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {PREBUILT_CUSTOMS.map((pc, idx) => (
+              <button 
+                key={idx}
+                onClick={() => addCustomFeature(pc.name, pc.price)}
+                className="bg-white border border-gray-200 hover:border-[#0d9488] hover:bg-[#f8fafc] text-[#64748b] hover:text-[#0d9488] px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+              >
+                <i className="fa-solid fa-plus"></i> {pc.name} (₹{pc.price.toLocaleString('en-IN')})
+              </button>
+            ))}
+          </div>
+
           {publicView.customFeatures.map(cf => (
-            <div key={cf.id} className="flex items-center justify-between bg-white border border-[#0d9488]/50 p-5 rounded-2xl shadow-sm">
-              <div className="flex items-center gap-4">
-                <div className="w-6 h-6 rounded-full bg-[#0d9488] flex items-center justify-center text-white shadow-sm">
-                  <i className="fa-solid fa-check text-xs"></i>
+            <div key={cf.id} className="flex flex-col md:flex-row items-center gap-3 bg-white border border-[#0d9488]/50 p-2 pl-4 rounded-2xl shadow-sm focus-within:ring-2 focus-within:ring-[#0d9488]/20 transition-all">
+              <div className="flex items-center gap-3 flex-grow w-full">
+                <div className="w-5 h-5 rounded-full bg-[#0d9488] flex items-center justify-center text-white shadow-sm flex-shrink-0">
+                  <i className="fa-solid fa-check text-[10px]"></i>
                 </div>
-                <span className="font-bold text-[#1e293b] text-sm">{cf.name}</span>
+                <input 
+                  type="text" 
+                  value={cf.name}
+                  onChange={(e) => updateCustomFeature(cf.id, e.target.value, cf.price)}
+                  className="bg-transparent border-none text-[#1e293b] font-bold text-sm focus:outline-none w-full"
+                />
               </div>
-              <div className="flex items-center gap-5">
-                <span className="font-mono text-[#1e293b] font-bold">+₹{cf.price.toLocaleString('en-IN')}</span>
-                <button onClick={() => removeCustomFeature(cf.id)} className="text-gray-400 hover:text-red-500 transition w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50">
+              <div className="flex items-center gap-2 w-full md:w-auto border-t md:border-t-0 md:border-l border-gray-100 pt-2 md:pt-0 pl-0 md:pl-4">
+                <span className="text-[#64748b] font-mono font-bold">₹</span>
+                <input 
+                  type="number" 
+                  value={cf.price}
+                  onChange={(e) => updateCustomFeature(cf.id, cf.name, Number(e.target.value))}
+                  className="bg-transparent border-none text-[#1e293b] font-mono font-bold w-24 focus:outline-none"
+                />
+                <button onClick={() => removeCustomFeature(cf.id)} className="text-gray-400 hover:text-red-500 transition w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 flex-shrink-0">
                   <i className="fa-solid fa-xmark"></i>
                 </button>
               </div>
             </div>
           ))}
 
-          <div className="flex flex-col md:flex-row gap-3 bg-white border border-gray-200 p-3 rounded-2xl focus-within:border-[#0d9488] focus-within:ring-2 focus-within:ring-[#0d9488]/20 transition-all shadow-sm">
+          <div className="flex flex-col md:flex-row gap-3 bg-white border border-gray-200 p-3 rounded-2xl focus-within:border-[#0d9488] focus-within:ring-2 focus-within:ring-[#0d9488]/20 transition-all shadow-sm mt-4">
             <input 
               type="text" 
               placeholder="Describe custom requirement..." 

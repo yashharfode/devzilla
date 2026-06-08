@@ -37,6 +37,7 @@ interface AgencyState {
   toggleSubFeature: (subId: string) => void; // Added
   addCustomFeature: (name: string, price: number) => void; // Added
   removeCustomFeature: (id: string) => void; // Added
+  updateCustomFeature: (id: string, name: string, price: number) => void;
   toggleAddon: (addon: AddonId) => void;
   addDiscount: (amount: number, reason: string) => void;
   removeDiscount: (id: string) => void;
@@ -189,6 +190,19 @@ export const useAgencyStore = create<AgencyState>((set) => ({
         publicView: { 
           ...state.currentClient.publicView, 
           customFeatures: state.currentClient.publicView.customFeatures.filter(f => f.id !== id) 
+        }
+      })
+    };
+  }),
+
+  updateCustomFeature: (id, name, price) => set((state) => {
+    if (!state.currentClient) return state;
+    return {
+      currentClient: recalculatePrices({
+        ...state.currentClient,
+        publicView: { 
+          ...state.currentClient.publicView, 
+          customFeatures: state.currentClient.publicView.customFeatures.map(f => f.id === id ? { ...f, name, price } : f) 
         }
       })
     };
