@@ -22,7 +22,7 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  if (pathname.startsWith('/admin') || pathname.startsWith('/consultation')) {
+  if (pathname.startsWith('/admin') || pathname.startsWith('/c')) {
     return null;
   }
 

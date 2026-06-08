@@ -67,10 +67,6 @@ export default function ConsultationGateway() {
           </button>
         </form>
       </div>
-      
-      <div className="mt-8 text-center text-[#64748b] text-xs font-medium tracking-wide">
-        Powered by DevZilla Agency OS
-      </div>
     </div>
   );
 }
