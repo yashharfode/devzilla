@@ -69,6 +69,28 @@ export default function MasterCRM({ onSelectClient }: { onSelectClient?: (id: st
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex justify-end gap-3">
+                    <button 
+                      onClick={() => {
+                        const url = `${window.location.origin}/c/${client.id}`;
+                        navigator.clipboard.writeText(url);
+                        alert("✨ Magic Link copied to clipboard!");
+                      }}
+                      className="text-gray-400 hover:text-blue-400 transition" 
+                      title="Copy Magic Link"
+                    >
+                      <i className="fa-solid fa-link"></i>
+                    </button>
+                    <button 
+                      onClick={() => {
+                        const url = `${window.location.origin}/c/${client.id}`;
+                        const text = `Hi ${client.clientName},\n\nHere is the custom digital blueprint and pricing for ${client.businessName}:\n\n${url}\n\nLet me know if you have any questions!\n\nBest,\nDevZilla Agency`;
+                        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+                      }}
+                      className="text-gray-400 hover:text-green-500 transition" 
+                      title="WhatsApp Auto-Closer"
+                    >
+                      <i className="fa-brands fa-whatsapp"></i>
+                    </button>
                     <Link href={`/c/${client.id}`} target="_blank" className="text-gray-400 hover:text-primary transition" title="View Consultation Front-Stage">
                       <i className="fa-solid fa-eye"></i>
                     </Link>
@@ -81,9 +103,21 @@ export default function MasterCRM({ onSelectClient }: { onSelectClient?: (id: st
                           }, 100);
                         }
                       }}
-                      className="text-gray-400 hover:text-white transition" title="Open Shadow Editor"
+                      className="text-gray-400 hover:text-white transition" 
+                      title="Open Shadow Editor"
                     >
-                      <i className="fa-solid fa-pen-to-square"></i>
+                      <i className="fa-solid fa-pen"></i>
+                    </button>
+                    <button 
+                      onClick={() => {
+                        if (confirm(`Are you sure you want to permanently delete ${client.businessName}?`)) {
+                          useAgencyStore.getState().deleteClient(client.id);
+                        }
+                      }}
+                      className="text-gray-400 hover:text-red-500 transition" 
+                      title="Delete Lead"
+                    >
+                      <i className="fa-solid fa-trash"></i>
                     </button>
                   </div>
                 </td>
