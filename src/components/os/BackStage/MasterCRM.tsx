@@ -14,8 +14,8 @@ export default function MasterCRM({ onSelectClient }: { onSelectClient?: (id: st
         </span>
       </div>
       
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm">
+      <div className="overflow-x-auto rounded-xl border border-gray-800">
+        <table className="w-full text-left border-collapse min-w-[800px]">
           <thead className="bg-gray-900/80 text-gray-400 font-mono text-xs uppercase tracking-wider border-b border-gray-700">
             <tr>
               <th className="px-6 py-4 font-semibold">Client Details</th>

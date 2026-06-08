@@ -25,11 +25,14 @@ export type ClientDocument = {
       hostingYearlyCost: number;
     };
     specialIncentives: Discount[];
-    clientRequirements: Record<string, string>;
+    clientRequirements: string;
     finalPrice: number;
     oneTimePrice: number;
     dueTodayInfra: number;
     recurringFromYear2: number;
+    urgencyBanner: string | null;
+    showCompetitorMatrix: boolean;
+    paymentMilestone: '100' | '50_50' | '40_30_30';
   };
   privateView: {
     baseCost: number;
@@ -37,6 +40,8 @@ export type ClientDocument = {
     margin: number;
     internalNotes: string;
     followUpSchedule: '3_days' | '7_days' | '14_days' | null;
+    dealStatus: 'negotiating' | 'won' | 'lost';
+    lastActive: string | null;
   };
 };
 
@@ -53,7 +58,7 @@ interface AgencyState {
   removeCustomFeature: (id: string) => void; // Added
   updateCustomFeature: (id: string, name: string, price: number) => void;
   updateInfrastructure: (updates: Partial<ClientDocument['publicView']['infrastructure']>) => void;
-  updateClientDetails: (updates: Partial<Pick<ClientDocument, 'clientName' | 'businessName'> & { clientRequirements?: Record<string, string> }>) => void;
+  updateClientDetails: (updates: Partial<Pick<ClientDocument, 'clientName' | 'businessName'> & { clientRequirements?: string }>) => void;
   toggleAddon: (addon: AddonId) => void;
   addSpecialIncentive: (amount: number, reason: string) => void;
   removeSpecialIncentive: (id: string) => void;
@@ -61,6 +66,11 @@ interface AgencyState {
   removeDiscount: (id: string) => void;
   updateInternalNotes: (notes: string) => void;
   setFollowUpSchedule: (schedule: '3_days' | '7_days' | '14_days' | null) => void;
+  deleteClient: (id: string) => void;
+  setDealStatus: (status: 'negotiating' | 'won' | 'lost') => void;
+  setUrgencyBanner: (banner: string | null) => void;
+  toggleCompetitorMatrix: () => void;
+  setPaymentMilestone: (milestone: '100' | '50_50' | '40_30_30') => void;
 }
 
 const recalculatePrices = (client: ClientDocument): ClientDocument => {
@@ -136,9 +146,12 @@ export const useAgencyStore = create<AgencyState>((set) => ({
         finalPrice: 28999,
         oneTimePrice: 24999,
         dueTodayInfra: 4000,
-        recurringFromYear2: 4000
+        recurringFromYear2: 4000,
+        urgencyBanner: null,
+        showCompetitorMatrix: false,
+        paymentMilestone: '100'
       },
-      privateView: { baseCost: 28999, discounts: [{ id: 'd1', amount: 2000, reason: 'Early close' }], margin: 26999, internalNotes: 'High priority', followUpSchedule: '3_days' }
+      privateView: { baseCost: 28999, discounts: [{ id: 'd1', amount: 2000, reason: 'Early close' }], margin: 26999, internalNotes: 'High priority', followUpSchedule: '3_days', dealStatus: 'negotiating', lastActive: '2 mins ago' }
     },
     {
       id: 'demo-client-2',
@@ -156,9 +169,12 @@ export const useAgencyStore = create<AgencyState>((set) => ({
         finalPrice: 31999,
         oneTimePrice: 31999,
         dueTodayInfra: 0,
-        recurringFromYear2: 0
+        recurringFromYear2: 0,
+        urgencyBanner: null,
+        showCompetitorMatrix: false,
+        paymentMilestone: '100'
       },
-      privateView: { baseCost: 31999, discounts: [], margin: 31999, internalNotes: 'Budget strict', followUpSchedule: '7_days' }
+      privateView: { baseCost: 31999, discounts: [], margin: 31999, internalNotes: 'Budget strict', followUpSchedule: '7_days', dealStatus: 'negotiating', lastActive: '1 hr ago' }
     }
   ],
 
@@ -181,6 +197,9 @@ export const useAgencyStore = create<AgencyState>((set) => ({
         oneTimePrice: BasePackages['basic_bhojnalaya'].price,
         dueTodayInfra: 4000,
         recurringFromYear2: 4000,
+        urgencyBanner: null,
+        showCompetitorMatrix: false,
+        paymentMilestone: '100'
       },
       privateView: {
         baseCost: BasePackages['basic_bhojnalaya'].price + 4000,
@@ -188,6 +207,8 @@ export const useAgencyStore = create<AgencyState>((set) => ({
         margin: BasePackages['basic_bhojnalaya'].price + 4000,
         internalNotes: '',
         followUpSchedule: null,
+        dealStatus: 'negotiating',
+        lastActive: 'Just now'
       }
     };
     return { currentClient: initialClient, clients: [...useAgencyStore.getState().clients, initialClient] };
@@ -211,6 +232,9 @@ export const useAgencyStore = create<AgencyState>((set) => ({
         oneTimePrice: BasePackages['basic_bhojnalaya'].price,
         dueTodayInfra: 4000,
         recurringFromYear2: 4000,
+        urgencyBanner: null,
+        showCompetitorMatrix: false,
+        paymentMilestone: '100'
       },
       privateView: {
         baseCost: BasePackages['basic_bhojnalaya'].price + 4000,
@@ -218,6 +242,8 @@ export const useAgencyStore = create<AgencyState>((set) => ({
         margin: BasePackages['basic_bhojnalaya'].price + 4000,
         internalNotes: '',
         followUpSchedule: null,
+        dealStatus: 'negotiating',
+        lastActive: 'Just now'
       }
     };
     return { currentClient: initialClient, clients: [...state.clients, initialClient] };
@@ -454,6 +480,54 @@ export const useAgencyStore = create<AgencyState>((set) => ({
       currentClient: {
         ...state.currentClient,
         privateView: { ...state.currentClient.privateView, followUpSchedule: schedule }
+      }
+    };
+  }),
+
+  deleteClient: (id) => set((state) => {
+    const remaining = state.clients.filter(c => c.id !== id);
+    return { 
+      clients: remaining,
+      currentClient: state.currentClient?.id === id ? null : state.currentClient
+    };
+  }),
+
+  setDealStatus: (status) => set((state) => {
+    if (!state.currentClient) return state;
+    return {
+      currentClient: {
+        ...state.currentClient,
+        privateView: { ...state.currentClient.privateView, dealStatus: status }
+      }
+    };
+  }),
+
+  setUrgencyBanner: (banner) => set((state) => {
+    if (!state.currentClient) return state;
+    return {
+      currentClient: {
+        ...state.currentClient,
+        publicView: { ...state.currentClient.publicView, urgencyBanner: banner }
+      }
+    };
+  }),
+
+  toggleCompetitorMatrix: () => set((state) => {
+    if (!state.currentClient) return state;
+    return {
+      currentClient: {
+        ...state.currentClient,
+        publicView: { ...state.currentClient.publicView, showCompetitorMatrix: !state.currentClient.publicView.showCompetitorMatrix }
+      }
+    };
+  }),
+
+  setPaymentMilestone: (milestone) => set((state) => {
+    if (!state.currentClient) return state;
+    return {
+      currentClient: {
+        ...state.currentClient,
+        publicView: { ...state.currentClient.publicView, paymentMilestone: milestone }
       }
     };
   })

@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { signInWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { auth } from '../../../config/firebase';
 import { useRouter } from 'next/navigation';
@@ -9,7 +9,11 @@ export default function AdminLogin() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [showLogin, setShowLogin] = useState(false);
+  
   const router = useRouter();
+  const clickCountRef = useRef(0);
+  const clickTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch allowed admin emails securely from environment variables
   const ALLOWED_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').split(',').map(e => e.trim());
@@ -17,7 +21,7 @@ export default function AdminLogin() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // Check if email is allowed. 
+        // If already logged in, bypass immediately
         if (user.email && !ALLOWED_EMAILS.includes(user.email)) {
           await signOut(auth);
           setError('Unauthorized access. Your email is not whitelisted for Admin access.');
@@ -30,7 +34,22 @@ export default function AdminLogin() {
       }
     });
     return () => unsubscribe();
-  }, [router]);
+  }, [router, ALLOWED_EMAILS]);
+
+  const handleSecretClick = () => {
+    clickCountRef.current += 1;
+    
+    if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+    
+    if (clickCountRef.current === 3) {
+      setShowLogin(true);
+      clickCountRef.current = 0;
+    } else {
+      clickTimerRef.current = setTimeout(() => {
+        clickCountRef.current = 0;
+      }, 2000);
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,10 +71,24 @@ export default function AdminLogin() {
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-[#020510] flex items-center justify-center"><div className="w-8 h-8 border-4 border-[#1e293b] border-t-[#0d9488] rounded-full animate-spin"></div></div>;
+  if (loading) return <div className="min-h-screen bg-black flex items-center justify-center"></div>;
 
+  if (!showLogin) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center font-sans">
+        <div className="flex items-center">
+          <h1 className="text-2xl font-medium border-r border-gray-600 pr-6 mr-6 py-2 tracking-widest">404</h1>
+          <h2 className="text-sm font-normal text-gray-200">
+            This page <span onClick={handleSecretClick} className="cursor-text select-text" style={{ cursor: 'text' }}>could</span> not be found.
+          </h2>
+        </div>
+      </div>
+    );
+  }
+
+  // Fade-in login screen
   return (
-    <div className="min-h-screen bg-[#020510] flex flex-col items-center justify-center p-4 font-sans text-white selection:bg-[#0d9488]/30">
+    <div className="min-h-screen bg-[#020510] flex flex-col items-center justify-center p-4 font-sans text-white selection:bg-[#0d9488]/30 animate-fade-in">
       
       <div className="w-full max-w-md bg-[#0a1128] border border-gray-800 rounded-2xl shadow-2xl overflow-hidden">
         <div className="p-8 border-b border-gray-800 bg-[#060b1f]">
