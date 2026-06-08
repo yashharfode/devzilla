@@ -69,7 +69,7 @@ export default function MasterCRM({ onSelectClient }: { onSelectClient?: (id: st
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex justify-end gap-3">
-                    <Link href={`/consultation/${client.id}`} target="_blank" className="text-gray-400 hover:text-primary transition" title="View Consultation Front-Stage">
+                    <Link href={`/c/${client.id}`} target="_blank" className="text-gray-400 hover:text-primary transition" title="View Consultation Front-Stage">
                       <i className="fa-solid fa-eye"></i>
                     </Link>
                     <button 

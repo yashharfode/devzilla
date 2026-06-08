@@ -20,7 +20,7 @@ export default function ConsultationGateway() {
     initClientWithDetails(clientId, clientName, businessName);
 
     // Route to the personalized consultation engine
-    router.push(`/consultation/${clientId}`);
+    router.push(`/c/${clientId}`);
   };
 
   return (

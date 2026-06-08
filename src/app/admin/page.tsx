@@ -35,7 +35,7 @@ export default function AdminDashboard() {
   const handleNewBlueprint = () => {
     const newId = Math.random().toString(36).substring(2, 9);
     initClient(newId);
-    window.open(`/consultation/${newId}`, '_blank');
+    window.open(`/c/${newId}`, '_blank');
   };
 
   const handleSeedDatabase = async () => {
