@@ -16,11 +16,12 @@ export type ClientDocument = {
     customFeatures: CustomFeature[]; 
     selectedAddons: AddonId[];
     infrastructure: {
-      hostingProvider: 'devzilla' | 'client';
+      hostingProvider: 'devzilla' | 'client' | 'assisted';
       domainStatus: 'new' | 'owned';
       durationYears: number;
       domainName: string;
       domainYearlyCost: number;
+      hostingYearlyCost: number;
     };
     finalPrice: number;
     oneTimePrice: number;
@@ -69,7 +70,10 @@ const recalculatePrices = (client: ClientDocument): ClientDocument => {
   const totalDiscounts = client.privateView.discounts.reduce((sum, d) => sum + d.amount, 0);
 
   const infra = client.publicView.infrastructure;
-  const hostingCost = infra.hostingProvider === 'devzilla' ? 3000 * infra.durationYears : 0;
+  let hostingCost = 0;
+  if (infra.hostingProvider === 'devzilla') hostingCost = 3000 * infra.durationYears;
+  else if (infra.hostingProvider === 'assisted') hostingCost = infra.hostingYearlyCost * infra.durationYears;
+  
   const domainCost = infra.domainStatus === 'new' ? infra.domainYearlyCost * infra.durationYears : 0;
   const infrastructureCost = hostingCost + domainCost;
 
@@ -126,7 +130,7 @@ export const useAgencyStore = create<AgencyState>((set) => ({
         uncheckedSubFeatures: [], 
         customFeatures: [], 
         selectedAddons: ['payment_gateway', 'admin_panel'], 
-        infrastructure: { hostingProvider: 'client', domainStatus: 'owned', durationYears: 1, domainName: '', domainYearlyCost: 1000 },
+        infrastructure: { hostingProvider: 'client', domainStatus: 'owned', durationYears: 1, domainName: '', domainYearlyCost: 1000, hostingYearlyCost: 0 },
         finalPrice: 31999,
         oneTimePrice: 31999,
         recurringPrice: 0
@@ -147,7 +151,7 @@ export const useAgencyStore = create<AgencyState>((set) => ({
         uncheckedSubFeatures: [],
         customFeatures: [],
         selectedAddons: [],
-        infrastructure: { hostingProvider: 'devzilla', domainStatus: 'new', durationYears: 1, domainName: '', domainYearlyCost: 1000 },
+        infrastructure: { hostingProvider: 'devzilla', domainStatus: 'new', durationYears: 1, domainName: '', domainYearlyCost: 1000, hostingYearlyCost: 0 },
         finalPrice: BasePackages['basic_bhojnalaya'].price + 4000, // +4000 for 1yr domain & hosting
         oneTimePrice: BasePackages['basic_bhojnalaya'].price,
         recurringPrice: 4000,
@@ -174,7 +178,7 @@ export const useAgencyStore = create<AgencyState>((set) => ({
         uncheckedSubFeatures: [],
         customFeatures: [],
         selectedAddons: [],
-        infrastructure: { hostingProvider: 'devzilla', domainStatus: 'new', durationYears: 1, domainName: '', domainYearlyCost: 1000 },
+        infrastructure: { hostingProvider: 'devzilla', domainStatus: 'new', durationYears: 1, domainName: '', domainYearlyCost: 1000, hostingYearlyCost: 0 },
         finalPrice: BasePackages['basic_bhojnalaya'].price + 4000,
         oneTimePrice: BasePackages['basic_bhojnalaya'].price,
         recurringPrice: 4000,

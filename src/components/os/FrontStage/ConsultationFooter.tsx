@@ -133,23 +133,29 @@ export default function ConsultationFooter() {
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
         
         {/* Split Totals */}
-        <div className="flex w-full md:w-auto justify-between md:justify-start gap-8">
-          <div>
+        <div className="flex w-full md:w-auto justify-between md:justify-start gap-4 md:gap-8 overflow-x-auto pb-2 md:pb-0">
+          <div className="shrink-0">
             <div className="text-[10px] text-[#64748b] uppercase tracking-widest font-bold mb-0.5">Website Setup</div>
             <div className="text-xl md:text-2xl font-bold text-[#1e293b] font-mono">
               ₹{currentClient.publicView.oneTimePrice.toLocaleString('en-IN')}
-              <span className="text-[10px] text-[#64748b] font-sans tracking-normal font-medium ml-1">One-time</span>
+              <span className="text-[10px] text-[#64748b] font-sans tracking-normal font-medium ml-1 hidden md:inline">One-time</span>
             </div>
           </div>
           {currentClient.publicView.recurringPrice > 0 && (
-            <div>
+            <div className="shrink-0">
               <div className="text-[10px] text-[#0d9488] uppercase tracking-widest font-bold mb-0.5">Infrastructure</div>
               <div className="text-xl md:text-2xl font-bold text-[#0d9488] font-mono">
                 ₹{currentClient.publicView.recurringPrice.toLocaleString('en-IN')}
-                <span className="text-[10px] text-[#0d9488]/70 font-sans tracking-normal font-medium ml-1">/ {currentClient.publicView.infrastructure.durationYears} Yr{currentClient.publicView.infrastructure.durationYears > 1 ? 's' : ''}</span>
+                <span className="text-[10px] text-[#0d9488]/70 font-sans tracking-normal font-medium ml-1 hidden md:inline">/ {currentClient.publicView.infrastructure.durationYears} Yr{currentClient.publicView.infrastructure.durationYears > 1 ? 's' : ''}</span>
               </div>
             </div>
           )}
+          <div className="shrink-0 border-l border-gray-200 pl-4 md:pl-8">
+            <div className="text-[10px] text-[#0f172a] uppercase tracking-widest font-bold mb-0.5">Total Amount</div>
+            <div className="text-xl md:text-2xl font-bold text-[#0f172a] font-mono">
+              ₹{currentClient.publicView.finalPrice.toLocaleString('en-IN')}
+            </div>
+          </div>
         </div>
         
         <div className="flex w-full md:w-auto gap-3">

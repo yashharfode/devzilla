@@ -273,27 +273,54 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
             <div className="flex gap-2">
               <button 
                 onClick={() => updateInfrastructure({ hostingProvider: 'devzilla' })}
-                className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all border ${
+                className={`flex-1 py-3 px-2 rounded-xl text-xs md:text-sm font-bold transition-all border ${
                   publicView.infrastructure.hostingProvider === 'devzilla'
                     ? 'bg-[#f8fafc] border-[#0d9488] text-[#1e293b] shadow-inner'
                     : 'bg-white border-gray-200 text-[#64748b] hover:bg-gray-50'
                 }`}
               >
                 DevZilla Cloud<br/>
-                <span className="text-xs font-mono font-normal mt-1 block">₹3,000/yr</span>
+                <span className="text-[10px] md:text-xs font-mono font-normal mt-1 block">₹3,000/yr</span>
               </button>
               <button 
                 onClick={() => updateInfrastructure({ hostingProvider: 'client' })}
-                className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all border ${
+                className={`flex-1 py-3 px-2 rounded-xl text-xs md:text-sm font-bold transition-all border ${
                   publicView.infrastructure.hostingProvider === 'client'
                     ? 'bg-[#f8fafc] border-[#0d9488] text-[#1e293b] shadow-inner'
                     : 'bg-white border-gray-200 text-[#64748b] hover:bg-gray-50'
                 }`}
               >
                 Client Provided<br/>
-                <span className="text-xs font-mono font-normal mt-1 block">₹0/yr</span>
+                <span className="text-[10px] md:text-xs font-mono font-normal mt-1 block">₹0/yr</span>
+              </button>
+              <button 
+                onClick={() => updateInfrastructure({ hostingProvider: 'assisted' })}
+                className={`flex-1 py-3 px-2 rounded-xl text-xs md:text-sm font-bold transition-all border ${
+                  publicView.infrastructure.hostingProvider === 'assisted'
+                    ? 'bg-[#f8fafc] border-[#0d9488] text-[#1e293b] shadow-inner'
+                    : 'bg-white border-gray-200 text-[#64748b] hover:bg-gray-50'
+                }`}
+              >
+                Assisted Setup<br/>
+                <span className="text-[10px] md:text-xs font-mono font-normal mt-1 block">Custom/yr</span>
               </button>
             </div>
+            
+            {publicView.infrastructure.hostingProvider === 'assisted' && (
+              <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between gap-4">
+                <span className="text-xs font-bold text-[#64748b]">Enter Hosting Price/Yr</span>
+                <div className="flex items-center gap-2 bg-[#f8fafc] border border-gray-200 rounded-lg px-3 py-1.5 w-1/2">
+                  <span className="text-[#64748b] font-mono font-bold text-sm">₹</span>
+                  <input 
+                    type="number"
+                    value={publicView.infrastructure.hostingYearlyCost || ''}
+                    onChange={(e) => updateInfrastructure({ hostingYearlyCost: Number(e.target.value) })}
+                    className="bg-transparent border-none w-full focus:outline-none text-sm font-mono font-bold text-[#1e293b]"
+                    placeholder="e.g. 2500"
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Domain Toggle */}
