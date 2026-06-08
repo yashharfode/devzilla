@@ -148,7 +148,7 @@ export default function ConsultationFooter() {
     autoTable(doc, {
       startY: startY,
       head: [['Description', 'Amount']],
-      body: tableBody,
+      body: tableBody as any,
       theme: 'grid',
       headStyles: { fillColor: [30, 41, 59] },
       columnStyles: { 1: { halign: 'right' } }
