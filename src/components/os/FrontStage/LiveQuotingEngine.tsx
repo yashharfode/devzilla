@@ -41,7 +41,7 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
       <div className="bg-white p-6 md:p-8 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-consultation-primary to-consultation-blue"></div>
         <h3 className="text-xl font-bold text-[#1e293b] mb-2 flex items-center gap-2">
-          <i className="fa-solid fa-layer-group text-[#baf2e9] text-2xl"></i> Client Industry
+          <i className="fa-solid fa-layer-group text-[#0d9488] text-2xl"></i> Client Industry
         </h3>
         <p className="text-[#64748b] text-sm mb-6 font-medium">Select the industry to auto-load the recommended blueprint configuration.</p>
         
@@ -52,7 +52,7 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
               onClick={() => setIndustry(ind)}
               className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all border ${
                 industry === ind 
-                  ? 'bg-[#f8fafc] border-[#baf2e9] text-[#1e293b] shadow-inner' 
+                  ? 'bg-[#f8fafc] border-[#0d9488] text-[#1e293b] shadow-inner' 
                   : 'bg-white border-gray-200 text-[#64748b] hover:border-gray-300 hover:bg-gray-50'
               }`}
             >
@@ -65,7 +65,7 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
       {/* Base Packages */}
       <div>
         <h3 className="text-2xl font-bold text-[#1e293b] mb-6 border-b border-gray-200 pb-4 inline-block pr-12 font-heading tracking-tight">
-          <span className="text-[#baf2e9] mr-3">1.</span> Base Infrastructure
+          <span className="text-[#0d9488] mr-3">1.</span> Base Infrastructure
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {(Object.entries(BasePackages) as [BasePackageId, typeof BasePackages[BasePackageId]][]).map(([id, pkg]) => {
@@ -75,7 +75,7 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
                 key={id}
                 className={`rounded-3xl p-6 md:p-8 transition-all border ${
                   isActive 
-                    ? 'bg-white border-[#baf2e9] shadow-[0_15px_30px_-10px_rgba(186,242,233,0.3)]' 
+                    ? 'bg-white border-[#0d9488] shadow-[0_15px_30px_-10px_rgba(186,242,233,0.3)]' 
                     : 'bg-[#f8fafc] border-gray-100 hover:border-gray-300 hover:bg-white'
                 }`}
               >
@@ -83,8 +83,8 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
                   className="flex justify-between items-start mb-6 cursor-pointer"
                   onClick={() => setBasePackage(id)}
                 >
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 flex-shrink-0 ${isActive ? 'border-[#baf2e9]' : 'border-gray-300'}`}>
-                    {isActive && <div className="w-3 h-3 rounded-full bg-[#baf2e9]"></div>}
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 flex-shrink-0 ${isActive ? 'border-[#0d9488]' : 'border-gray-300'}`}>
+                    {isActive && <div className="w-3 h-3 rounded-full bg-[#0d9488]"></div>}
                   </div>
                   <div className="text-2xl font-mono text-[#1e293b] font-bold ml-4 tracking-tight">₹{pkg.price.toLocaleString('en-IN')}</div>
                 </div>
@@ -103,7 +103,7 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
                           <button 
                             onClick={(e) => { e.stopPropagation(); toggleSubFeature(f.id); }}
                             className={`w-5 h-5 rounded flex-shrink-0 mt-0.5 flex items-center justify-center border transition-all shadow-sm ${
-                              !isUnchecked ? 'bg-[#baf2e9] border-[#baf2e9] text-white' : 'bg-white border-gray-300 text-transparent hover:border-[#baf2e9]/50'
+                              !isUnchecked ? 'bg-[#0d9488] border-[#0d9488] text-white' : 'bg-white border-gray-300 text-transparent hover:border-[#0d9488]/50'
                             }`}
                           >
                             <i className="fa-solid fa-check text-[10px]"></i>
@@ -126,7 +126,7 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
       {/* Modular Add-ons */}
       <div>
         <h3 className="text-2xl font-bold text-[#1e293b] mb-6 border-b border-gray-200 pb-4 inline-block pr-12 font-heading tracking-tight">
-          <span className="text-[#baf2e9] mr-3">2.</span> Modular Add-ons
+          <span className="text-[#0d9488] mr-3">2.</span> Modular Add-ons
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {(Object.entries(ModularAddons) as [AddonId, typeof ModularAddons[AddonId]][]).map(([id, addon]) => {
@@ -137,12 +137,12 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
                 onClick={() => toggleAddon(id)}
                 className={`cursor-pointer rounded-2xl p-6 transition-all flex items-center justify-between border ${
                   isSelected 
-                    ? 'bg-[#f8fafc] border-[#baf2e9] shadow-sm' 
+                    ? 'bg-[#f8fafc] border-[#0d9488] shadow-sm' 
                     : 'bg-white border-gray-100 hover:border-gray-300 hover:bg-gray-50'
                 }`}
               >
                 <div className="flex items-center gap-5">
-                  <div className={`w-12 h-7 rounded-full p-1 transition-colors shadow-inner ${isSelected ? 'bg-[#baf2e9]' : 'bg-gray-200'}`}>
+                  <div className={`w-12 h-7 rounded-full p-1 transition-colors shadow-inner ${isSelected ? 'bg-[#0d9488]' : 'bg-gray-200'}`}>
                     <div className={`w-5 h-5 rounded-full bg-white transition-transform shadow-sm ${isSelected ? 'translate-x-5' : 'translate-x-0'}`}></div>
                   </div>
                   <div>
@@ -162,14 +162,14 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
       {/* Custom Requirements */}
       <div>
         <h3 className="text-2xl font-bold text-[#1e293b] mb-6 border-b border-gray-200 pb-4 inline-block pr-12 font-heading tracking-tight">
-          <span className="text-[#baf2e9] mr-3">3.</span> Custom Requirements
+          <span className="text-[#0d9488] mr-3">3.</span> Custom Requirements
         </h3>
         
         <div className="space-y-3 max-w-3xl">
           {publicView.customFeatures.map(cf => (
-            <div key={cf.id} className="flex items-center justify-between bg-white border border-[#baf2e9]/50 p-5 rounded-2xl shadow-sm">
+            <div key={cf.id} className="flex items-center justify-between bg-white border border-[#0d9488]/50 p-5 rounded-2xl shadow-sm">
               <div className="flex items-center gap-4">
-                <div className="w-6 h-6 rounded-full bg-[#baf2e9] flex items-center justify-center text-white shadow-sm">
+                <div className="w-6 h-6 rounded-full bg-[#0d9488] flex items-center justify-center text-white shadow-sm">
                   <i className="fa-solid fa-check text-xs"></i>
                 </div>
                 <span className="font-bold text-[#1e293b] text-sm">{cf.name}</span>
@@ -183,7 +183,7 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
             </div>
           ))}
 
-          <div className="flex flex-col md:flex-row gap-3 bg-white border border-gray-200 p-3 rounded-2xl focus-within:border-[#baf2e9] focus-within:ring-2 focus-within:ring-[#baf2e9]/20 transition-all shadow-sm">
+          <div className="flex flex-col md:flex-row gap-3 bg-white border border-gray-200 p-3 rounded-2xl focus-within:border-[#0d9488] focus-within:ring-2 focus-within:ring-[#0d9488]/20 transition-all shadow-sm">
             <input 
               type="text" 
               placeholder="Describe custom requirement..." 
