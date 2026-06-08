@@ -54,20 +54,20 @@ export default function ConsultationFooter() {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 w-full bg-[#060b1f]/90 backdrop-blur-xl border-t border-gray-800 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] z-50 p-4 md:p-6">
-      <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+    <div className="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-xl border-t border-gray-200 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-50 py-3 px-4 md:py-4">
+      <div className="max-w-6xl mx-auto flex justify-between items-center gap-4">
         <div>
-          <div className="text-sm text-gray-400 uppercase tracking-widest font-bold mb-1">Total Investment</div>
-          <div className="text-4xl md:text-5xl font-bold text-white font-mono flex items-baseline gap-2">
+          <div className="text-xs text-[#64748b] uppercase tracking-widest font-bold mb-0.5">Total Investment</div>
+          <div className="text-2xl md:text-3xl font-bold text-[#1e293b] font-mono flex items-baseline gap-2">
             ₹{currentClient.publicView.finalPrice.toLocaleString('en-IN')}
-            <span className="text-sm text-gray-500 font-sans tracking-normal">One-time setup</span>
+            <span className="text-xs text-[#64748b] font-sans tracking-normal font-medium">One-time setup</span>
           </div>
         </div>
         
         <button 
           onClick={handleGeneratePDF}
           disabled={isGenerating}
-          className={`w-full md:w-auto bg-gradient-primary text-dark font-bold px-8 py-4 rounded-xl transition-all flex items-center justify-center gap-2 text-lg ${isGenerating ? 'opacity-50 cursor-not-allowed' : 'shadow-[0_0_20px_rgba(244,185,66,0.3)] hover:scale-105'}`}
+          className={`w-full md:w-auto premium-btn font-bold px-6 py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 text-sm md:text-base ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           {isGenerating ? (
             <><i className="fa-solid fa-spinner fa-spin"></i> Generating...</>
