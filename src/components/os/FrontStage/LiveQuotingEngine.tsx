@@ -12,7 +12,7 @@ const PREBUILT_CUSTOMS = [
 ];
 
 export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
-  const { currentClient, initClient, setIndustry, setBasePackage, toggleAddon, toggleSubFeature, addCustomFeature, removeCustomFeature, updateCustomFeature } = useAgencyStore();
+  const { currentClient, initClient, setIndustry, setBasePackage, toggleAddon, toggleSubFeature, addCustomFeature, removeCustomFeature, updateCustomFeature, updateInfrastructure } = useAgencyStore();
 
   const [customName, setCustomName] = useState('');
   const [customPrice, setCustomPrice] = useState('');
@@ -93,7 +93,10 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 flex-shrink-0 ${isActive ? 'border-[#0d9488]' : 'border-gray-300'}`}>
                     {isActive && <div className="w-3 h-3 rounded-full bg-[#0d9488]"></div>}
                   </div>
-                  <div className="text-2xl font-mono text-[#1e293b] font-bold ml-4 tracking-tight">₹{pkg.price.toLocaleString('en-IN')}</div>
+                  <div className="flex flex-col items-end text-right ml-4">
+                    {pkg.compareAtPrice && <div className="text-xs font-mono text-gray-400 line-through mb-0.5">₹{pkg.compareAtPrice.toLocaleString('en-IN')}</div>}
+                    <div className="text-2xl font-mono text-[#1e293b] font-bold tracking-tight">₹{pkg.price.toLocaleString('en-IN')}</div>
+                  </div>
                 </div>
                 <div className="cursor-pointer" onClick={() => setBasePackage(id)}>
                   <h4 className="text-xl font-bold text-[#1e293b] mb-2">{pkg.name}</h4>
@@ -121,6 +124,21 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
                       </div>
                     )
                   })}
+                  
+                  {pkg.freeServices && pkg.freeServices.length > 0 && (
+                    <div className="mt-6 pt-4 border-t border-dashed border-gray-200">
+                      <h5 className="text-[10px] text-[#0d9488] font-bold uppercase tracking-widest mb-3 flex items-center gap-1.5">
+                        <i className="fa-solid fa-gift"></i> Free Bonuses
+                      </h5>
+                      <ul className="space-y-2">
+                        {pkg.freeServices.map((fs, idx) => (
+                          <li key={idx} className="flex items-center gap-2 text-xs font-bold text-[#1e293b]">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#f4b942]"></div> {fs}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -238,6 +256,99 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
             >
               Add
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Infrastructure */}
+      <div>
+        <h3 className="text-2xl font-bold text-[#1e293b] mb-6 border-b border-gray-200 pb-4 inline-block pr-12 font-heading tracking-tight">
+          <span className="text-[#0d9488] mr-3">4.</span> Infrastructure (Domain & Hosting)
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
+          {/* Hosting Toggle */}
+          <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+            <h4 className="font-bold text-[#1e293b] mb-4 text-sm uppercase tracking-wider">Web Hosting</h4>
+            <div className="flex gap-2">
+              <button 
+                onClick={() => updateInfrastructure({ hostingProvider: 'devzilla' })}
+                className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all border ${
+                  publicView.infrastructure.hostingProvider === 'devzilla'
+                    ? 'bg-[#f8fafc] border-[#0d9488] text-[#1e293b] shadow-inner'
+                    : 'bg-white border-gray-200 text-[#64748b] hover:bg-gray-50'
+                }`}
+              >
+                DevZilla Cloud<br/>
+                <span className="text-xs font-mono font-normal mt-1 block">₹3,000/yr</span>
+              </button>
+              <button 
+                onClick={() => updateInfrastructure({ hostingProvider: 'client' })}
+                className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all border ${
+                  publicView.infrastructure.hostingProvider === 'client'
+                    ? 'bg-[#f8fafc] border-[#0d9488] text-[#1e293b] shadow-inner'
+                    : 'bg-white border-gray-200 text-[#64748b] hover:bg-gray-50'
+                }`}
+              >
+                Client Provided<br/>
+                <span className="text-xs font-mono font-normal mt-1 block">₹0/yr</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Domain Toggle */}
+          <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+            <h4 className="font-bold text-[#1e293b] mb-4 text-sm uppercase tracking-wider">Domain Name (.com / .in)</h4>
+            <div className="flex gap-2">
+              <button 
+                onClick={() => updateInfrastructure({ domainStatus: 'new' })}
+                className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all border ${
+                  publicView.infrastructure.domainStatus === 'new'
+                    ? 'bg-[#f8fafc] border-[#0d9488] text-[#1e293b] shadow-inner'
+                    : 'bg-white border-gray-200 text-[#64748b] hover:bg-gray-50'
+                }`}
+              >
+                Buy New<br/>
+                <span className="text-xs font-mono font-normal mt-1 block">₹1,000/yr</span>
+              </button>
+              <button 
+                onClick={() => updateInfrastructure({ domainStatus: 'owned' })}
+                className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all border ${
+                  publicView.infrastructure.domainStatus === 'owned'
+                    ? 'bg-[#f8fafc] border-[#0d9488] text-[#1e293b] shadow-inner'
+                    : 'bg-white border-gray-200 text-[#64748b] hover:bg-gray-50'
+                }`}
+              >
+                Already Owned<br/>
+                <span className="text-xs font-mono font-normal mt-1 block">₹0/yr</span>
+              </button>
+            </div>
+          </div>
+          
+          {/* Duration Slider */}
+          <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm md:col-span-2">
+            <div className="flex justify-between items-center mb-4">
+              <h4 className="font-bold text-[#1e293b] text-sm uppercase tracking-wider">Contract Duration</h4>
+              <span className="font-mono font-bold text-[#0d9488] bg-[#0d9488]/10 px-3 py-1 rounded-full text-sm">
+                {publicView.infrastructure.durationYears} Year{publicView.infrastructure.durationYears > 1 ? 's' : ''}
+              </span>
+            </div>
+            <input 
+              type="range" 
+              min="1" 
+              max="5" 
+              step="1"
+              value={publicView.infrastructure.durationYears}
+              onChange={(e) => updateInfrastructure({ durationYears: Number(e.target.value) })}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#0d9488]"
+            />
+            <div className="flex justify-between text-xs text-gray-400 mt-2 font-bold px-1">
+              <span>1 Yr</span>
+              <span>2 Yrs</span>
+              <span>3 Yrs</span>
+              <span>4 Yrs</span>
+              <span>5 Yrs</span>
+            </div>
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-export type BasePackageId = 'landing_page' | 'standard_business' | 'ecommerce';
+export type BasePackageId = 'basic_bhojnalaya' | 'standard_restaurant' | 'premium_restaurant';
 export type AddonId = 'admin_panel' | 'online_ordering' | 'table_reservation' | 'whatsapp_bot' | 'advanced_seo' | 'payment_gateway' | 'multi_language' | 'live_chat';
 
 export type SubFeature = {
@@ -10,45 +10,69 @@ export type SubFeature = {
 export type BasePackageConfig = {
   name: string;
   price: number;
+  compareAtPrice?: number;
   description: string;
   features: SubFeature[];
+  freeServices?: string[];
 };
 
 export const BasePackages: Record<BasePackageId, BasePackageConfig> = {
-  landing_page: { 
-    name: 'Landing Page / Single Page', 
-    price: 8000, 
-    description: 'High-converting single page website',
+  basic_bhojnalaya: { 
+    name: 'Basic', 
+    price: 12999,
+    compareAtPrice: 17999,
+    description: 'Perfect for Small Bhojnalaya',
     features: [
-      { id: 'lp_design', name: 'Premium UI/UX Design', deductionValue: 3000 },
-      { id: 'lp_copy', name: 'Copywriting Assistance', deductionValue: 1500 },
-      { id: 'lp_contact', name: 'Lead Capture Form', deductionValue: 1000 },
-      { id: 'lp_hosting', name: '1 Year Free Hosting', deductionValue: 2000 }
-    ]
+      { id: 'bhoj_landing', name: 'Premium Landing Page', deductionValue: 3000 },
+      { id: 'bhoj_mobile', name: 'Mobile Responsive Design', deductionValue: 1000 },
+      { id: 'bhoj_menu', name: 'Menu Section', deductionValue: 1500 },
+      { id: 'bhoj_gallery', name: 'Gallery (Up to 15 Photos)', deductionValue: 1000 },
+      { id: 'bhoj_contact', name: 'Contact Form', deductionValue: 1000 },
+      { id: 'bhoj_maps', name: 'Google Maps Integration', deductionValue: 500 },
+      { id: 'bhoj_whatsapp', name: 'WhatsApp & Call Button', deductionValue: 500 },
+      { id: 'bhoj_seo', name: 'Basic SEO Setup', deductionValue: 1000 },
+      { id: 'bhoj_speed', name: 'Speed Optimization', deductionValue: 1500 },
+      { id: 'bhoj_social', name: 'Social Media Links', deductionValue: 500 }
+    ],
+    freeServices: ['1 Yr Free Maintenance', 'Free SSL Certificate', 'Initial Content Upload']
   },
-  standard_business: { 
-    name: 'Standard Business (5 Pages)', 
-    price: 15000, 
-    description: 'Complete corporate presence',
+  standard_restaurant: { 
+    name: 'Standard', 
+    price: 17999,
+    compareAtPrice: 23999,
+    description: 'Best for Restaurants',
     features: [
-      { id: 'std_pages', name: '5 Core Pages (Home, About...)', deductionValue: 4000 },
-      { id: 'std_seo', name: 'Basic On-page SEO', deductionValue: 2000 },
-      { id: 'std_contact', name: 'Advanced Contact Form', deductionValue: 1500 },
-      { id: 'std_gallery', name: 'Dynamic Portfolio/Gallery', deductionValue: 2000 },
-      { id: 'std_hosting', name: '1 Yr Free Hosting + Domain', deductionValue: 3000 }
-    ]
+      { id: 'std_pages', name: 'Multi-Page Website (5-7 Pages)', deductionValue: 4000 },
+      { id: 'std_about', name: 'About Us / Why Choose Us', deductionValue: 1000 },
+      { id: 'std_reviews', name: 'Customer Reviews / Testimonials', deductionValue: 1000 },
+      { id: 'std_offers', name: 'Special Offers / Combos', deductionValue: 1000 },
+      { id: 'std_categories', name: 'Food Categories', deductionValue: 1000 },
+      { id: 'std_gallery', name: 'Advanced Gallery', deductionValue: 1500 },
+      { id: 'std_seo', name: 'Better SEO (On-page + Technical)', deductionValue: 2000 },
+      { id: 'std_whatsapp_order', name: 'WhatsApp Order / Inquiry', deductionValue: 2000 },
+      { id: 'std_analytics', name: 'Google Analytics Setup', deductionValue: 1000 },
+      { id: 'std_perf', name: 'Performance Optimization', deductionValue: 1500 }
+    ],
+    freeServices: ['1 Yr Free Maintenance', 'Free SSL Certificate', 'Monthly Analytics Report', 'Free Minor Updates']
   },
-  ecommerce: { 
-    name: 'E-Commerce / Advanced App', 
-    price: 25000, 
-    description: 'Full digital storefront and catalog',
+  premium_restaurant: { 
+    name: 'Premium', 
+    price: 24999,
+    compareAtPrice: 34999,
+    description: 'Complete Solution for Serious Restaurants',
     features: [
-      { id: 'ecom_catalog', name: 'Product Catalog (Up to 50)', deductionValue: 5000 },
-      { id: 'ecom_cart', name: 'Cart & Checkout Flow', deductionValue: 4000 },
-      { id: 'ecom_payment', name: 'Basic Payment Setup', deductionValue: 2000 },
-      { id: 'ecom_user', name: 'User Auth & Profiles', deductionValue: 3000 },
-      { id: 'ecom_hosting', name: 'Premium Cloud Hosting', deductionValue: 4000 }
-    ]
+      { id: 'prem_reserve', name: 'Online Table Reservation System', deductionValue: 4000 },
+      { id: 'prem_catering', name: 'Catering / Party Booking Form', deductionValue: 2000 },
+      { id: 'prem_menu', name: 'Dynamic Menu (Easy to Update)', deductionValue: 3000 },
+      { id: 'prem_admin', name: 'Admin Panel (Basic)', deductionValue: 3000 },
+      { id: 'prem_seo', name: 'Advanced SEO (Schema + Local SEO)', deductionValue: 2500 },
+      { id: 'prem_gsc', name: 'Google Search Console Setup', deductionValue: 1000 },
+      { id: 'prem_chat', name: 'Live Chat / WhatsApp Chat', deductionValue: 1500 },
+      { id: 'prem_events', name: 'Google Analytics + Events', deductionValue: 1500 },
+      { id: 'prem_anim', name: 'Custom Animations', deductionValue: 2000 },
+      { id: 'prem_support', name: 'Priority Support', deductionValue: 2000 }
+    ],
+    freeServices: ['Lifetime VIP Support', 'Dedicated Account Manager', 'Free Ad Campaign Setup', 'Unlimited Content Edits']
   }
 };
 

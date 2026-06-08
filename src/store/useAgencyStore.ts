@@ -15,6 +15,11 @@ export type ClientDocument = {
     uncheckedSubFeatures: string[]; 
     customFeatures: CustomFeature[]; 
     selectedAddons: AddonId[];
+    infrastructure: {
+      hostingProvider: 'devzilla' | 'client';
+      domainStatus: 'new' | 'owned';
+      durationYears: number;
+    };
     finalPrice: number;
   };
   privateView: {
@@ -38,6 +43,7 @@ interface AgencyState {
   addCustomFeature: (name: string, price: number) => void; // Added
   removeCustomFeature: (id: string) => void; // Added
   updateCustomFeature: (id: string, name: string, price: number) => void;
+  updateInfrastructure: (updates: Partial<ClientDocument['publicView']['infrastructure']>) => void;
   toggleAddon: (addon: AddonId) => void;
   addDiscount: (amount: number, reason: string) => void;
   removeDiscount: (id: string) => void;
@@ -58,7 +64,12 @@ const recalculatePrices = (client: ClientDocument): ClientDocument => {
   const customFeaturesPrice = client.publicView.customFeatures.reduce((sum, cf) => sum + cf.price, 0);
   const totalDiscounts = client.privateView.discounts.reduce((sum, d) => sum + d.amount, 0);
 
-  const baseCost = basePrice - deductions + addonsPrice + customFeaturesPrice;
+  const infra = client.publicView.infrastructure;
+  const hostingCost = infra.hostingProvider === 'devzilla' ? 3000 * infra.durationYears : 0;
+  const domainCost = infra.domainStatus === 'new' ? 1000 * infra.durationYears : 0;
+  const infrastructureCost = hostingCost + domainCost;
+
+  const baseCost = basePrice - deductions + addonsPrice + customFeaturesPrice + infrastructureCost;
   const finalPrice = Math.max(0, baseCost - totalDiscounts);
 
   return {
@@ -70,7 +81,7 @@ const recalculatePrices = (client: ClientDocument): ClientDocument => {
     privateView: {
       ...client.privateView,
       baseCost,
-      margin: finalPrice, // Simplified margin tracking (could subtract actual dev costs here)
+      margin: finalPrice, 
     }
   };
 };
@@ -83,16 +94,30 @@ export const useAgencyStore = create<AgencyState>((set) => ({
       clientName: 'Rahul Sharma',
       businessName: 'Spice Route Restaurant',
       industry: 'Restaurant',
-      publicView: { basePackage: 'standard_business', uncheckedSubFeatures: [], customFeatures: [], selectedAddons: ['online_ordering'], finalPrice: 23000 },
-      privateView: { baseCost: 23000, discounts: [{ id: 'd1', amount: 2000, reason: 'Early close' }], margin: 21000, internalNotes: 'High priority', followUpSchedule: '3_days' }
+      publicView: { 
+        basePackage: 'standard_restaurant', 
+        uncheckedSubFeatures: [], 
+        customFeatures: [], 
+        selectedAddons: ['online_ordering'], 
+        infrastructure: { hostingProvider: 'devzilla', domainStatus: 'new', durationYears: 1 },
+        finalPrice: 28999 
+      },
+      privateView: { baseCost: 28999, discounts: [{ id: 'd1', amount: 2000, reason: 'Early close' }], margin: 26999, internalNotes: 'High priority', followUpSchedule: '3_days' }
     },
     {
       id: 'demo-client-2',
       clientName: 'Priya Patel',
       businessName: 'Vogue Boutique',
       industry: 'E-Commerce',
-      publicView: { basePackage: 'ecommerce', uncheckedSubFeatures: [], customFeatures: [], selectedAddons: ['payment_gateway', 'admin_panel'], finalPrice: 32000 },
-      privateView: { baseCost: 32000, discounts: [], margin: 32000, internalNotes: 'Budget strict', followUpSchedule: '7_days' }
+      publicView: { 
+        basePackage: 'premium_restaurant', 
+        uncheckedSubFeatures: [], 
+        customFeatures: [], 
+        selectedAddons: ['payment_gateway', 'admin_panel'], 
+        infrastructure: { hostingProvider: 'client', domainStatus: 'owned', durationYears: 1 },
+        finalPrice: 31999 
+      },
+      privateView: { baseCost: 31999, discounts: [], margin: 31999, internalNotes: 'Budget strict', followUpSchedule: '7_days' }
     }
   ],
 
@@ -104,16 +129,17 @@ export const useAgencyStore = create<AgencyState>((set) => ({
       businessName: 'Unknown Business',
       industry: 'General',
       publicView: {
-        basePackage: 'landing_page',
+        basePackage: 'basic_bhojnalaya',
         uncheckedSubFeatures: [],
         customFeatures: [],
         selectedAddons: [],
-        finalPrice: BasePackages['landing_page'].price,
+        infrastructure: { hostingProvider: 'devzilla', domainStatus: 'new', durationYears: 1 },
+        finalPrice: BasePackages['basic_bhojnalaya'].price + 4000, // +4000 for 1yr domain & hosting
       },
       privateView: {
-        baseCost: BasePackages['landing_page'].price,
+        baseCost: BasePackages['basic_bhojnalaya'].price + 4000,
         discounts: [],
-        margin: BasePackages['landing_page'].price,
+        margin: BasePackages['basic_bhojnalaya'].price + 4000,
         internalNotes: '',
         followUpSchedule: null,
       }
@@ -128,16 +154,17 @@ export const useAgencyStore = create<AgencyState>((set) => ({
       businessName,
       industry: 'General',
       publicView: {
-        basePackage: 'landing_page',
+        basePackage: 'basic_bhojnalaya',
         uncheckedSubFeatures: [],
         customFeatures: [],
         selectedAddons: [],
-        finalPrice: BasePackages['landing_page'].price,
+        infrastructure: { hostingProvider: 'devzilla', domainStatus: 'new', durationYears: 1 },
+        finalPrice: BasePackages['basic_bhojnalaya'].price + 4000,
       },
       privateView: {
-        baseCost: BasePackages['landing_page'].price,
+        baseCost: BasePackages['basic_bhojnalaya'].price + 4000,
         discounts: [],
-        margin: BasePackages['landing_page'].price,
+        margin: BasePackages['basic_bhojnalaya'].price + 4000,
         internalNotes: '',
         followUpSchedule: null,
       }
@@ -208,6 +235,22 @@ export const useAgencyStore = create<AgencyState>((set) => ({
     };
   }),
 
+  updateInfrastructure: (updates) => set((state) => {
+    if (!state.currentClient) return state;
+    return {
+      currentClient: recalculatePrices({
+        ...state.currentClient,
+        publicView: {
+          ...state.currentClient.publicView,
+          infrastructure: {
+            ...state.currentClient.publicView.infrastructure,
+            ...updates
+          }
+        }
+      })
+    };
+  }),
+
   setIndustry: (industry) => set((state) => {
     if (!state.currentClient) return state;
     
@@ -217,15 +260,15 @@ export const useAgencyStore = create<AgencyState>((set) => ({
 
     switch(industry) {
       case 'Restaurant':
-        basePkg = 'standard_business';
+        basePkg = 'standard_restaurant';
         prefilledAddons = ['online_ordering', 'table_reservation', 'advanced_seo'];
         break;
       case 'Hospital':
-        basePkg = 'standard_business';
+        basePkg = 'standard_restaurant';
         prefilledAddons = ['table_reservation', 'live_chat'];
         break;
       case 'E-Commerce':
-        basePkg = 'ecommerce';
+        basePkg = 'premium_restaurant';
         prefilledAddons = ['admin_panel', 'online_ordering', 'payment_gateway'];
         break;
       default:
