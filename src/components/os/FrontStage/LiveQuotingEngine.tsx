@@ -294,7 +294,6 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
                 <span className="text-xs font-mono font-normal mt-1 block">₹0/yr</span>
               </button>
             </div>
-            </div>
           </div>
 
           {/* Domain Toggle */}
