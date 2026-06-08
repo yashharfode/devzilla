@@ -67,6 +67,21 @@ export default function ConsultationFooter() {
     doc.text(`Business: ${currentClient.businessName}`, 14, 51);
     doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 57);
 
+    let startY = 65;
+
+    if (currentClient.publicView.clientRequirements) {
+      doc.setFontSize(10);
+      doc.setTextColor(13, 148, 136); // Teal color for header
+      doc.text("Project Requirements:", 14, 65);
+      
+      doc.setFontSize(9);
+      doc.setTextColor(100, 116, 139);
+      const splitRequirements = doc.splitTextToSize(currentClient.publicView.clientRequirements, 180);
+      doc.text(splitRequirements, 14, 71);
+      
+      startY = 71 + (splitRequirements.length * 5) + 10;
+    }
+
     // Prepare Table Data
     const tableBody = [];
     
@@ -106,22 +121,32 @@ export default function ConsultationFooter() {
       tableBody.push([`Custom: ${cf.name}`, `INR ${cf.price.toLocaleString('en-IN')}`]);
     });
     
+    currentClient.publicView.specialIncentives.forEach(inc => {
+      tableBody.push([`Bonus Incentive: ${inc.reason}`, `-INR ${inc.amount.toLocaleString('en-IN')}`]);
+    });
+    
     tableBody.push([{ content: 'Total One-Time Setup', styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } }, { content: `INR ${currentClient.publicView.oneTimePrice.toLocaleString('en-IN')}`, styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } }]);
 
     const infra = currentClient.publicView.infrastructure;
-    if (infra.hostingProvider === 'devzilla' || infra.domainStatus === 'new') {
-       tableBody.push([{ content: `Infrastructure (${infra.durationYears} Year${infra.durationYears > 1 ? 's' : ''})`, styles: { fontStyle: 'bold', textColor: [13, 148, 136] } }, '']);
+    if (currentClient.publicView.dueTodayInfra > 0 || currentClient.publicView.recurringFromYear2 > 0) {
+       tableBody.push([{ content: `Infrastructure`, styles: { fontStyle: 'bold', textColor: [13, 148, 136] } }, '']);
        if (infra.hostingProvider === 'devzilla') {
-         tableBody.push([`  Web Hosting (DevZilla Cloud)`, `INR ${(3000 * infra.durationYears).toLocaleString('en-IN')}`]);
+         tableBody.push([`  Web Hosting (DevZilla Cloud - 1st Year)`, `INR ${(3000).toLocaleString('en-IN')}`]);
+         tableBody.push([`  Web Hosting (Renewal)`, `INR 3,000 / Yr`]);
+       } else if (infra.hostingProvider === 'assisted' && infra.hostingYearlyCost > 0) {
+         tableBody.push([`  Web Hosting (Assisted Setup - 1st Year)`, `INR ${(infra.hostingYearlyCost).toLocaleString('en-IN')}`]);
+         tableBody.push([`  Web Hosting (Renewal)`, `INR ${(infra.hostingYearlyCost).toLocaleString('en-IN')} / Yr`]);
        }
+
        if (infra.domainStatus === 'new') {
-         tableBody.push([`  Domain Name: ${infra.domainName || 'New Domain'}`, `INR ${(infra.domainYearlyCost * infra.durationYears).toLocaleString('en-IN')}`]);
+         tableBody.push([`  Domain Name (1st Year)`, `INR ${(infra.domainFirstYearCost).toLocaleString('en-IN')}`]);
+         tableBody.push([`  Domain Name (Renewal)`, `INR ${(infra.domainRenewalCost).toLocaleString('en-IN')} / Yr`]);
        }
-       tableBody.push([{ content: 'Total Recurring Infrastructure', styles: { fontStyle: 'bold', fillColor: [240, 253, 250] } }, { content: `INR ${currentClient.publicView.recurringPrice.toLocaleString('en-IN')}`, styles: { fontStyle: 'bold', fillColor: [240, 253, 250] } }]);
+       tableBody.push([{ content: 'Initial Investment (Setup + 1st Year Infra)', styles: { fontStyle: 'bold', fillColor: [240, 253, 250] } }, { content: `INR ${currentClient.publicView.finalPrice.toLocaleString('en-IN')}`, styles: { fontStyle: 'bold', fillColor: [240, 253, 250] } }]);
     }
 
     autoTable(doc, {
-      startY: 65,
+      startY: startY,
       head: [['Description', 'Amount']],
       body: tableBody,
       theme: 'grid',
@@ -156,21 +181,30 @@ export default function ConsultationFooter() {
               <span className="text-[10px] text-[#64748b] font-sans tracking-normal font-medium ml-1 hidden md:inline">One-time</span>
             </div>
           </div>
-          {currentClient.publicView.recurringPrice > 0 && (
+          {currentClient.publicView.dueTodayInfra > 0 && (
             <div className="shrink-0">
-              <div className="text-[10px] text-[#0d9488] uppercase tracking-widest font-bold mb-0.5">Infrastructure</div>
+              <div className="text-[10px] text-[#0d9488] uppercase tracking-widest font-bold mb-0.5">1st Year Infra</div>
               <div className="text-xl md:text-2xl font-bold text-[#0d9488] font-mono">
-                ₹{currentClient.publicView.recurringPrice.toLocaleString('en-IN')}
-                <span className="text-[10px] text-[#0d9488]/70 font-sans tracking-normal font-medium ml-1 hidden md:inline">/ {currentClient.publicView.infrastructure.durationYears} Yr{currentClient.publicView.infrastructure.durationYears > 1 ? 's' : ''}</span>
+                ₹{currentClient.publicView.dueTodayInfra.toLocaleString('en-IN')}
+                <span className="text-[10px] text-[#0d9488]/70 font-sans tracking-normal font-medium ml-1 hidden md:inline">Initial</span>
               </div>
             </div>
           )}
           <div className="shrink-0 border-l border-gray-200 pl-4 md:pl-8">
-            <div className="text-[10px] text-[#0f172a] uppercase tracking-widest font-bold mb-0.5">Total Amount</div>
+            <div className="text-[10px] text-[#0f172a] uppercase tracking-widest font-bold mb-0.5">Initial Investment</div>
             <div className="text-xl md:text-2xl font-bold text-[#0f172a] font-mono">
               ₹{currentClient.publicView.finalPrice.toLocaleString('en-IN')}
             </div>
           </div>
+          {currentClient.publicView.recurringFromYear2 > 0 && (
+            <div className="shrink-0 border-l border-gray-200 pl-4 md:pl-8 opacity-70">
+              <div className="text-[10px] text-[#64748b] uppercase tracking-widest font-bold mb-0.5">Renewal (From Yr 2)</div>
+              <div className="text-xl md:text-2xl font-bold text-[#64748b] font-mono">
+                ₹{currentClient.publicView.recurringFromYear2.toLocaleString('en-IN')}
+                <span className="text-[10px] text-[#64748b] font-sans tracking-normal font-medium ml-1 hidden md:inline">/ Yr</span>
+              </div>
+            </div>
+          )}
         </div>
         
         <div className="flex w-full md:w-auto gap-3">

@@ -20,12 +20,16 @@ export type ClientDocument = {
       domainStatus: 'new' | 'owned';
       durationYears: number;
       domainName: string;
-      domainYearlyCost: number;
+      domainFirstYearCost: number;
+      domainRenewalCost: number;
       hostingYearlyCost: number;
     };
+    specialIncentives: Discount[];
+    clientRequirements: Record<string, string>;
     finalPrice: number;
     oneTimePrice: number;
-    recurringPrice: number;
+    dueTodayInfra: number;
+    recurringFromYear2: number;
   };
   privateView: {
     baseCost: number;
@@ -49,7 +53,10 @@ interface AgencyState {
   removeCustomFeature: (id: string) => void; // Added
   updateCustomFeature: (id: string, name: string, price: number) => void;
   updateInfrastructure: (updates: Partial<ClientDocument['publicView']['infrastructure']>) => void;
+  updateClientDetails: (updates: Partial<Pick<ClientDocument, 'clientName' | 'businessName'> & { clientRequirements?: Record<string, string> }>) => void;
   toggleAddon: (addon: AddonId) => void;
+  addSpecialIncentive: (amount: number, reason: string) => void;
+  removeSpecialIncentive: (id: string) => void;
   addDiscount: (amount: number, reason: string) => void;
   removeDiscount: (id: string) => void;
   updateInternalNotes: (notes: string) => void;
@@ -68,21 +75,30 @@ const recalculatePrices = (client: ClientDocument): ClientDocument => {
   const addonsPrice = client.publicView.selectedAddons.reduce((sum, addonId) => sum + ModularAddons[addonId].price, 0);
   const customFeaturesPrice = client.publicView.customFeatures.reduce((sum, cf) => sum + cf.price, 0);
   const totalDiscounts = client.privateView.discounts.reduce((sum, d) => sum + d.amount, 0);
+  const totalIncentives = client.publicView.specialIncentives.reduce((sum, d) => sum + d.amount, 0);
 
   const infra = client.publicView.infrastructure;
-  let hostingCost = 0;
-  if (infra.hostingProvider === 'devzilla') hostingCost = 3000 * infra.durationYears;
-  else if (infra.hostingProvider === 'assisted') hostingCost = infra.hostingYearlyCost * infra.durationYears;
+  let hostingYear1 = 0;
+  let hostingRenewal = 0;
+  if (infra.hostingProvider === 'devzilla') {
+    hostingYear1 = 3000;
+    hostingRenewal = 3000;
+  } else if (infra.hostingProvider === 'assisted') {
+    hostingYear1 = infra.hostingYearlyCost;
+    hostingRenewal = infra.hostingYearlyCost;
+  }
   
-  const domainCost = infra.domainStatus === 'new' ? infra.domainYearlyCost * infra.durationYears : 0;
-  const infrastructureCost = hostingCost + domainCost;
+  const domainYear1 = infra.domainStatus === 'new' ? infra.domainFirstYearCost : 0;
+  const domainRenewal = infra.domainStatus === 'new' ? infra.domainRenewalCost : 0;
+  
+  const dueTodayInfra = hostingYear1 + domainYear1;
+  const recurringFromYear2 = hostingRenewal + domainRenewal;
 
   const baseCostWithoutInfra = basePrice - deductions + addonsPrice + customFeaturesPrice;
-  const oneTimePrice = Math.max(0, baseCostWithoutInfra - totalDiscounts);
-  const recurringPrice = infrastructureCost;
+  const oneTimePrice = Math.max(0, baseCostWithoutInfra - totalIncentives);
   
-  const baseCost = baseCostWithoutInfra + infrastructureCost;
-  const finalPrice = oneTimePrice + recurringPrice;
+  const baseCost = baseCostWithoutInfra + dueTodayInfra; // Just for margin calc
+  const finalPrice = Math.max(0, oneTimePrice + dueTodayInfra - totalDiscounts); // Total Due Today
 
   return {
     ...client,
@@ -90,7 +106,8 @@ const recalculatePrices = (client: ClientDocument): ClientDocument => {
       ...client.publicView,
       finalPrice,
       oneTimePrice,
-      recurringPrice,
+      dueTodayInfra,
+      recurringFromYear2,
     },
     privateView: {
       ...client.privateView,
@@ -113,10 +130,13 @@ export const useAgencyStore = create<AgencyState>((set) => ({
         uncheckedSubFeatures: [], 
         customFeatures: [], 
         selectedAddons: ['online_ordering'], 
-        infrastructure: { hostingProvider: 'devzilla', domainStatus: 'new', durationYears: 1, domainName: '', domainYearlyCost: 1000 },
+        infrastructure: { hostingProvider: 'devzilla', domainStatus: 'new', durationYears: 1, domainName: '', domainFirstYearCost: 1000, domainRenewalCost: 1000, hostingYearlyCost: 0 },
+        specialIncentives: [],
+        clientRequirements: '',
         finalPrice: 28999,
         oneTimePrice: 24999,
-        recurringPrice: 4000
+        dueTodayInfra: 4000,
+        recurringFromYear2: 4000
       },
       privateView: { baseCost: 28999, discounts: [{ id: 'd1', amount: 2000, reason: 'Early close' }], margin: 26999, internalNotes: 'High priority', followUpSchedule: '3_days' }
     },
@@ -130,10 +150,13 @@ export const useAgencyStore = create<AgencyState>((set) => ({
         uncheckedSubFeatures: [], 
         customFeatures: [], 
         selectedAddons: ['payment_gateway', 'admin_panel'], 
-        infrastructure: { hostingProvider: 'client', domainStatus: 'owned', durationYears: 1, domainName: '', domainYearlyCost: 1000, hostingYearlyCost: 0 },
+        infrastructure: { hostingProvider: 'client', domainStatus: 'owned', durationYears: 1, domainName: '', domainFirstYearCost: 1000, domainRenewalCost: 1000, hostingYearlyCost: 0 },
+        specialIncentives: [],
+        clientRequirements: '',
         finalPrice: 31999,
         oneTimePrice: 31999,
-        recurringPrice: 0
+        dueTodayInfra: 0,
+        recurringFromYear2: 0
       },
       privateView: { baseCost: 31999, discounts: [], margin: 31999, internalNotes: 'Budget strict', followUpSchedule: '7_days' }
     }
@@ -151,10 +174,13 @@ export const useAgencyStore = create<AgencyState>((set) => ({
         uncheckedSubFeatures: [],
         customFeatures: [],
         selectedAddons: [],
-        infrastructure: { hostingProvider: 'devzilla', domainStatus: 'new', durationYears: 1, domainName: '', domainYearlyCost: 1000, hostingYearlyCost: 0 },
+        infrastructure: { hostingProvider: 'devzilla', domainStatus: 'new', durationYears: 1, domainName: '', domainFirstYearCost: 1000, domainRenewalCost: 1000, hostingYearlyCost: 0 },
+        specialIncentives: [],
+        clientRequirements: '',
         finalPrice: BasePackages['basic_bhojnalaya'].price + 4000, // +4000 for 1yr domain & hosting
         oneTimePrice: BasePackages['basic_bhojnalaya'].price,
-        recurringPrice: 4000,
+        dueTodayInfra: 4000,
+        recurringFromYear2: 4000,
       },
       privateView: {
         baseCost: BasePackages['basic_bhojnalaya'].price + 4000,
@@ -178,10 +204,13 @@ export const useAgencyStore = create<AgencyState>((set) => ({
         uncheckedSubFeatures: [],
         customFeatures: [],
         selectedAddons: [],
-        infrastructure: { hostingProvider: 'devzilla', domainStatus: 'new', durationYears: 1, domainName: '', domainYearlyCost: 1000, hostingYearlyCost: 0 },
+        infrastructure: { hostingProvider: 'devzilla', domainStatus: 'new', durationYears: 1, domainName: '', domainFirstYearCost: 1000, domainRenewalCost: 1000, hostingYearlyCost: 0 },
+        specialIncentives: [],
+        clientRequirements: '',
         finalPrice: BasePackages['basic_bhojnalaya'].price + 4000,
         oneTimePrice: BasePackages['basic_bhojnalaya'].price,
-        recurringPrice: 4000,
+        dueTodayInfra: 4000,
+        recurringFromYear2: 4000,
       },
       privateView: {
         baseCost: BasePackages['basic_bhojnalaya'].price + 4000,
@@ -200,6 +229,20 @@ export const useAgencyStore = create<AgencyState>((set) => ({
       return { currentClient: { ...client } };
     }
     return state;
+  }),
+
+  updateClientDetails: (updates) => set((state) => {
+    if (!state.currentClient) return state;
+    const updatedClient = {
+      ...state.currentClient,
+      clientName: updates.clientName !== undefined ? updates.clientName : state.currentClient.clientName,
+      businessName: updates.businessName !== undefined ? updates.businessName : state.currentClient.businessName,
+      publicView: {
+        ...state.currentClient.publicView,
+        clientRequirements: updates.clientRequirements !== undefined ? updates.clientRequirements : state.currentClient.publicView.clientRequirements
+      }
+    };
+    return { currentClient: recalculatePrices(updatedClient) };
   }),
 
   toggleSubFeature: (subId) => set((state) => {
@@ -339,6 +382,33 @@ export const useAgencyStore = create<AgencyState>((set) => ({
       }
     });
     return { currentClient: updatedClient };
+  }),
+
+  addSpecialIncentive: (amount, reason) => set((state) => {
+    if (!state.currentClient) return state;
+    const newIncentive = { id: Date.now().toString(), amount, reason };
+    return {
+      currentClient: recalculatePrices({
+        ...state.currentClient,
+        publicView: {
+          ...state.currentClient.publicView,
+          specialIncentives: [...state.currentClient.publicView.specialIncentives, newIncentive]
+        }
+      })
+    };
+  }),
+
+  removeSpecialIncentive: (id) => set((state) => {
+    if (!state.currentClient) return state;
+    return {
+      currentClient: recalculatePrices({
+        ...state.currentClient,
+        publicView: {
+          ...state.currentClient.publicView,
+          specialIncentives: state.currentClient.publicView.specialIncentives.filter(d => d.id !== id)
+        }
+      })
+    };
   }),
 
   addDiscount: (amount, reason) => set((state) => {

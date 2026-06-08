@@ -1,5 +1,4 @@
-import LiveQuotingEngine from '../../../components/os/FrontStage/LiveQuotingEngine';
-import ConsultationFooter from '../../../components/os/FrontStage/ConsultationFooter';
+import ConsultationTabs from '../../../components/os/FrontStage/ConsultationTabs';
 
 export default async function ConsultationPage({ params }: { params: Promise<{ clientId: string }> }) {
   const resolvedParams = await params;
@@ -16,20 +15,9 @@ export default async function ConsultationPage({ params }: { params: Promise<{ c
         </div>
       </nav>
 
-      <main className="container mx-auto px-4 md:px-6 py-12">
-        <div className="mb-12 text-center max-w-3xl mx-auto" data-aos="fade-down">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 font-heading text-[#1e293b] tracking-tight">
-            Digital Solution Blueprint
-          </h1>
-          <p className="text-[#64748b] text-lg">
-            Let&apos;s craft the perfect digital infrastructure for your business. Select your required features below to see live transparent pricing.
-          </p>
-        </div>
-
-        <LiveQuotingEngine clientId={resolvedParams.clientId} />
+      <main>
+        <ConsultationTabs clientId={resolvedParams.clientId} />
       </main>
-
-      <ConsultationFooter />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useAgencyStore } from '../../../store/useAgencyStore';
+import DiscountEngine from './DiscountEngine';
 
 export default function ShadowEditor({ clientId }: { clientId: string }) {
   const { currentClient, selectClient, addDiscount, updateInternalNotes } = useAgencyStore();
@@ -9,9 +10,13 @@ export default function ShadowEditor({ clientId }: { clientId: string }) {
   const [discountReason, setDiscountReason] = useState('');
   const [notes, setNotes] = useState(currentClient?.privateView.internalNotes || '');
 
+  useEffect(() => {
+    if (!currentClient || currentClient.id !== clientId) {
+      selectClient(clientId);
+    }
+  }, [clientId, currentClient, selectClient]);
+
   if (!currentClient || currentClient.id !== clientId) {
-    // This will trigger a re-render from the store if it's missing, but we handle selection manually usually
-    selectClient(clientId);
     return <div className="text-gray-500 animate-pulse p-6">Loading Shadow Editor...</div>;
   }
 
@@ -62,45 +67,7 @@ export default function ShadowEditor({ clientId }: { clientId: string }) {
             </div>
           </div>
 
-          <div className="space-y-4">
-            <h4 className="text-xs text-gray-500 font-bold uppercase tracking-widest border-b border-gray-800 pb-2">Discount Ledger (Hidden from Client)</h4>
-            
-            {currentClient.privateView.discounts.length === 0 ? (
-              <p className="text-xs text-gray-600 italic py-2">No active discounts.</p>
-            ) : (
-              <ul className="space-y-2 mb-4 max-h-[150px] overflow-y-auto custom-scrollbar">
-                {currentClient.privateView.discounts.map(d => (
-                  <li key={d.id} className="text-sm flex justify-between bg-red-500/5 border border-red-500/20 px-4 py-2.5 rounded-lg">
-                    <span className="text-gray-300">{d.reason}</span>
-                    <span className="font-mono text-red-400 font-bold">-₹{d.amount.toLocaleString('en-IN')}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-            
-            <div className="flex gap-2 mt-2">
-              <input 
-                type="number" 
-                placeholder="Amount (₹)" 
-                className="bg-[#050914] border border-gray-800 rounded-lg p-2.5 text-sm text-white w-1/3 focus:border-red-500/50 outline-none transition-colors font-mono"
-                value={discountAmt}
-                onChange={e => setDiscountAmt(e.target.value)}
-              />
-              <input 
-                type="text" 
-                placeholder="Reason (e.g. Closing Deal)" 
-                className="bg-[#050914] border border-gray-800 rounded-lg p-2.5 text-sm text-white w-2/3 focus:border-red-500/50 outline-none transition-colors"
-                value={discountReason}
-                onChange={e => setDiscountReason(e.target.value)}
-              />
-            </div>
-            <button 
-              onClick={handleAddDiscount}
-              className="w-full bg-red-500/10 text-red-400 border border-red-500/30 font-bold py-2.5 rounded-lg text-sm hover:bg-red-500/20 transition-all flex items-center justify-center gap-2"
-            >
-              <i className="fa-solid fa-tag"></i> Apply Secret Discount
-            </button>
-          </div>
+          <DiscountEngine clientId={clientId} />
         </div>
 
         {/* Right Column: Internal Notes */}

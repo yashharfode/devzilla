@@ -352,17 +352,32 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
             </div>
 
             {publicView.infrastructure.domainStatus === 'new' && (
-              <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between gap-4">
-                <span className="text-xs font-bold text-[#64748b]">Enter Domain Price/Yr</span>
-                <div className="flex items-center gap-2 bg-[#f8fafc] border border-gray-200 rounded-lg px-3 py-1.5 w-1/2">
-                  <span className="text-[#64748b] font-mono font-bold text-sm">₹</span>
-                  <input 
-                    type="number"
-                    value={publicView.infrastructure.domainYearlyCost || ''}
-                    onChange={(e) => updateInfrastructure({ domainYearlyCost: Number(e.target.value) })}
-                    className="bg-transparent border-none w-full focus:outline-none text-sm font-mono font-bold text-[#1e293b]"
-                    placeholder="e.g. 1000"
-                  />
+              <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col gap-3">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-xs font-bold text-[#64748b]">1st Year Price</span>
+                  <div className="flex items-center gap-2 bg-[#f8fafc] border border-gray-200 rounded-lg px-3 py-1.5 w-1/2">
+                    <span className="text-[#64748b] font-mono font-bold text-sm">₹</span>
+                    <input 
+                      type="number"
+                      value={publicView.infrastructure.domainFirstYearCost || ''}
+                      onChange={(e) => updateInfrastructure({ domainFirstYearCost: Number(e.target.value) })}
+                      className="bg-transparent border-none w-full focus:outline-none text-sm font-mono font-bold text-[#1e293b]"
+                      placeholder="e.g. 500"
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-xs font-bold text-[#64748b]">Renewal Price/Yr</span>
+                  <div className="flex items-center gap-2 bg-[#f8fafc] border border-gray-200 rounded-lg px-3 py-1.5 w-1/2">
+                    <span className="text-[#64748b] font-mono font-bold text-sm">₹</span>
+                    <input 
+                      type="number"
+                      value={publicView.infrastructure.domainRenewalCost || ''}
+                      onChange={(e) => updateInfrastructure({ domainRenewalCost: Number(e.target.value) })}
+                      className="bg-transparent border-none w-full focus:outline-none text-sm font-mono font-bold text-[#1e293b]"
+                      placeholder="e.g. 1000"
+                    />
+                  </div>
                 </div>
               </div>
             )}
@@ -392,6 +407,78 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
               <span>4 Yrs</span>
               <span>5 Yrs</span>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Special Incentives */}
+      <div className="mt-12">
+        <h3 className="text-2xl font-bold text-[#1e293b] mb-6 border-b border-gray-200 pb-4 inline-block pr-12 font-heading tracking-tight">
+          <span className="text-[#0d9488] mr-3">5.</span> Consultation Bonuses
+        </h3>
+
+        <div className="bg-white p-6 md:p-8 rounded-2xl border border-gray-200 shadow-sm max-w-4xl">
+          <p className="text-sm text-[#64748b] mb-6">
+            Apply special value-add incentives for the client taking immediate action. These will be deducted from the Initial Investment total.
+          </p>
+
+          <div className="space-y-4">
+            {publicView.specialIncentives.map((incentive) => (
+              <div key={incentive.id} className="flex items-center justify-between bg-[#f8fafc] border border-gray-200 p-4 rounded-xl">
+                <div>
+                  <h4 className="font-bold text-[#1e293b] text-sm">{incentive.reason}</h4>
+                  <p className="text-xs text-[#0d9488] font-bold font-mono">-₹{incentive.amount.toLocaleString('en-IN')}</p>
+                </div>
+                <button 
+                  onClick={() => removeSpecialIncentive(incentive.id)}
+                  className="text-red-500 hover:text-red-700 transition-colors p-2"
+                >
+                  <i className="fa-solid fa-trash"></i>
+                </button>
+              </div>
+            ))}
+            
+            <form 
+              className="flex gap-4 items-end pt-4"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const form = e.target as HTMLFormElement;
+                const reasonInput = form.elements.namedItem('reason') as HTMLInputElement;
+                const amountInput = form.elements.namedItem('amount') as HTMLInputElement;
+                
+                if (reasonInput.value && amountInput.value) {
+                  addSpecialIncentive(Number(amountInput.value), reasonInput.value);
+                  form.reset();
+                }
+              }}
+            >
+              <div className="flex-1">
+                <label className="block text-xs font-bold text-[#64748b] mb-1">Incentive Description</label>
+                <input 
+                  name="reason"
+                  type="text" 
+                  className="w-full bg-[#f8fafc] border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#0d9488]"
+                  placeholder="e.g. Free Logo Design Promo"
+                  required
+                />
+              </div>
+              <div className="w-1/3">
+                <label className="block text-xs font-bold text-[#64748b] mb-1">Value (₹)</label>
+                <input 
+                  name="amount"
+                  type="number" 
+                  className="w-full bg-[#f8fafc] border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#0d9488] font-mono"
+                  placeholder="e.g. 5000"
+                  required
+                />
+              </div>
+              <button 
+                type="submit"
+                className="bg-[#1e293b] hover:bg-[#334155] text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors h-[38px] flex items-center justify-center"
+              >
+                Apply
+              </button>
+            </form>
           </div>
         </div>
       </div>
