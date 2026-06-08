@@ -108,7 +108,7 @@ export default function ClientBrief({ clientId, onNext }: { clientId: string, on
         const parsed: Record<string, string> = {};
         const lines = reqString.split('\n\n');
         lines.forEach(line => {
-          const match = line.match(/^\*\*Q: (.*?)\*\*\n(.*)$/s);
+          const match = line.match(/^\*\*Q: (.*?)\*\*\n([\s\S]*)$/);
           if (match) {
             const qText = match[1];
             const aText = match[2];
