@@ -45,17 +45,34 @@ export type ClientDocument = {
   };
 };
 
+export type LeadStatus = 'lead' | 'follow_up' | 'meeting' | 'negotiating' | 'converted' | 'not_interested';
+
+export type Lead = {
+  id: string;
+  phone: string;
+  name?: string;
+  category?: string;
+  status: LeadStatus;
+  createdAt: string;
+};
+
 interface AgencyState {
   currentClient: ClientDocument | null;
   clients: ClientDocument[]; 
+  leads: Lead[];
+  addLead: (phone: string, name?: string, category?: string) => { success: boolean; error?: string };
+  updateLeadStatus: (id: string, status: LeadStatus) => void;
+  deleteLead: (id: string) => void;
+  convertLeadToClient: (id: string) => string | null;
+  
   initClient: (id: string) => void;
   initClientWithDetails: (id: string, clientName: string, businessName: string) => void;
   selectClient: (id: string) => void;
   setIndustry: (industry: string) => void;
   setBasePackage: (pkg: BasePackageId) => void;
-  toggleSubFeature: (subId: string) => void; // Added
-  addCustomFeature: (name: string, price: number) => void; // Added
-  removeCustomFeature: (id: string) => void; // Added
+  toggleSubFeature: (subId: string) => void;
+  addCustomFeature: (name: string, price: number) => void;
+  removeCustomFeature: (id: string) => void;
   updateCustomFeature: (id: string, name: string, price: number) => void;
   updateInfrastructure: (updates: Partial<ClientDocument['publicView']['infrastructure']>) => void;
   updateClientDetails: (updates: Partial<Pick<ClientDocument, 'clientName' | 'businessName'> & { clientRequirements?: string }>) => void;
@@ -127,8 +144,12 @@ const recalculatePrices = (client: ClientDocument): ClientDocument => {
   };
 };
 
-export const useAgencyStore = create<AgencyState>((set) => ({
+export const useAgencyStore = create<AgencyState>((set, get) => ({
   currentClient: null,
+  leads: [
+    { id: 'lead-1', phone: '+919876543210', name: 'Rahul (Gym)', category: 'Fitness', status: 'lead', createdAt: new Date().toISOString() },
+    { id: 'lead-2', phone: '+919998887776', name: 'Dr. Sharma', category: 'Medical', status: 'not_interested', createdAt: new Date(Date.now() - 86400000).toISOString() }
+  ],
   clients: [
     {
       id: 'demo-client-1',
@@ -177,6 +198,85 @@ export const useAgencyStore = create<AgencyState>((set) => ({
       privateView: { baseCost: 31999, discounts: [], margin: 31999, internalNotes: 'Budget strict', followUpSchedule: '7_days', dealStatus: 'negotiating', lastActive: '1 hr ago' }
     }
   ],
+
+  addLead: (phone, name, category) => {
+    const state = get();
+    const existingRejected = state.leads.find(l => l.phone === phone && l.status === 'not_interested');
+    if (existingRejected) {
+      return { success: false, error: '⚠️ Lead already rejected previously! (Not Interested)' };
+    }
+    
+    const existing = state.leads.find(l => l.phone === phone);
+    if (existing) {
+      return { success: false, error: 'Lead with this phone number already exists in pipeline.' };
+    }
+
+    const newLead: Lead = {
+      id: `lead-${Date.now()}`,
+      phone,
+      name,
+      category,
+      status: 'lead',
+      createdAt: new Date().toISOString()
+    };
+    
+    set({ leads: [newLead, ...state.leads] });
+    return { success: true };
+  },
+
+  updateLeadStatus: (id, status) => set((state) => ({
+    leads: state.leads.map(l => l.id === id ? { ...l, status } : l)
+  })),
+
+  deleteLead: (id) => set((state) => ({
+    leads: state.leads.filter(l => l.id !== id)
+  })),
+
+  convertLeadToClient: (id) => {
+    const state = get();
+    const lead = state.leads.find(l => l.id === id);
+    if (!lead) return null;
+
+    const clientId = `client-${Date.now()}`;
+    const initialClient: ClientDocument = {
+      id: clientId,
+      clientName: lead.name || 'New Client',
+      businessName: lead.category || 'Unknown Business',
+      industry: lead.category || 'General',
+      publicView: {
+        basePackage: 'basic_bhojnalaya',
+        uncheckedSubFeatures: [],
+        customFeatures: [],
+        selectedAddons: [],
+        infrastructure: { hostingProvider: 'devzilla', domainStatus: 'new', durationYears: 1, domainName: '', domainFirstYearCost: 1000, domainRenewalCost: 1000, hostingYearlyCost: 0 },
+        specialIncentives: [],
+        clientRequirements: `Converted from lead (${lead.phone})`,
+        finalPrice: BasePackages['basic_bhojnalaya'].price + 4000,
+        oneTimePrice: BasePackages['basic_bhojnalaya'].price,
+        dueTodayInfra: 4000,
+        recurringFromYear2: 4000,
+        urgencyBanner: null,
+        showCompetitorMatrix: false,
+        paymentMilestone: '100'
+      },
+      privateView: {
+        baseCost: BasePackages['basic_bhojnalaya'].price + 4000,
+        discounts: [],
+        margin: BasePackages['basic_bhojnalaya'].price + 4000,
+        internalNotes: `Converted from lead. Phone: ${lead.phone}`,
+        followUpSchedule: null,
+        dealStatus: 'negotiating',
+        lastActive: 'Just now'
+      }
+    };
+
+    set({ 
+      clients: [initialClient, ...state.clients],
+      leads: state.leads.map(l => l.id === id ? { ...l, status: 'converted' } : l)
+    });
+    
+    return clientId;
+  },
 
   initClient: (id) => set(() => {
     // Legacy fallback

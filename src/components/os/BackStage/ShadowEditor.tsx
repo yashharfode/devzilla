@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAgencyStore } from '../../../store/useAgencyStore';
 import DiscountEngine from './DiscountEngine';
+import AIAssistant from './AIAssistant';
 
 export default function ShadowEditor({ clientId }: { clientId: string }) {
   const { currentClient, selectClient, addDiscount, updateInternalNotes, setDealStatus, setUrgencyBanner, toggleCompetitorMatrix, setPaymentMilestone, setFollowUpSchedule } = useAgencyStore();
@@ -114,8 +115,11 @@ export default function ShadowEditor({ clientId }: { clientId: string }) {
                Clone Config <i className="fa-solid fa-copy"></i>
             </button>
           </div>
+          
+          {/* AI Intelligence Integration */}
+          <AIAssistant industry={currentClient.industry} />
 
-          <h4 className="text-xs text-gray-500 font-bold uppercase tracking-widest mb-4 border-b border-gray-800 pb-2">Deal-Closing Artillery</h4>
+          <h4 className="text-xs text-gray-500 font-bold uppercase tracking-widest mb-4 border-b border-gray-800 pb-2 mt-6">Deal-Closing Artillery</h4>
           
           <div className="space-y-4">
             <div className="bg-[#050914] p-4 rounded-xl border border-gray-800">
