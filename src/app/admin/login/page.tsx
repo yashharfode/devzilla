@@ -10,7 +10,7 @@ export default function AdminLogin() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [showLogin, setShowLogin] = useState(false);
-  
+
   const router = useRouter();
   const clickCountRef = useRef(0);
   const clickTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -38,9 +38,9 @@ export default function AdminLogin() {
 
   const handleSecretClick = () => {
     clickCountRef.current += 1;
-    
+
     if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
-    
+
     if (clickCountRef.current === 3) {
       setShowLogin(true);
       clickCountRef.current = 0;
@@ -89,7 +89,7 @@ export default function AdminLogin() {
   // Fade-in login screen
   return (
     <div className="min-h-screen bg-[#020510] flex flex-col items-center justify-center p-4 font-sans text-white selection:bg-[#0d9488]/30 animate-fade-in">
-      
+
       <div className="w-full max-w-md bg-[#0a1128] border border-gray-800 rounded-2xl shadow-2xl overflow-hidden">
         <div className="p-8 border-b border-gray-800 bg-[#060b1f]">
           <div className="flex items-center justify-center gap-3 mb-2">
@@ -114,8 +114,8 @@ export default function AdminLogin() {
               <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Email Identity</label>
               <div className="relative">
                 <i className="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
-                <input 
-                  type="email" 
+                <input
+                  type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-[#020510] border border-gray-800 rounded-xl pl-11 pr-4 py-3 text-white font-medium focus:outline-none focus:border-[#0d9488] transition-colors placeholder-gray-600"
@@ -128,8 +128,8 @@ export default function AdminLogin() {
               <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Access Key</label>
               <div className="relative">
                 <i className="fa-solid fa-key absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
-                <input 
-                  type="password" 
+                <input
+                  type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full bg-[#020510] border border-gray-800 rounded-xl pl-11 pr-4 py-3 text-white font-medium focus:outline-none focus:border-[#0d9488] transition-colors placeholder-gray-600"
@@ -138,7 +138,7 @@ export default function AdminLogin() {
               </div>
             </div>
 
-            <button 
+            <button
               type="submit"
               className="w-full bg-[#1e293b] hover:bg-[#334155] text-white border border-gray-700 py-3.5 rounded-xl font-bold transition-all mt-4 flex items-center justify-center gap-2"
             >
@@ -152,7 +152,7 @@ export default function AdminLogin() {
             <div className="h-[1px] bg-gray-800 flex-1"></div>
           </div>
 
-          <button 
+          <button
             onClick={handleGoogleSignIn}
             className="w-full bg-white hover:bg-gray-100 text-gray-900 py-3.5 rounded-xl font-bold transition-all flex items-center justify-center gap-3 shadow-lg"
           >
@@ -160,7 +160,7 @@ export default function AdminLogin() {
           </button>
         </div>
       </div>
-      
+
       <div className="mt-8 text-center text-xs text-gray-600 font-mono">
         <p>DevZilla Agency OS v2.0</p>
         <p>Secured via Firebase Gateway</p>

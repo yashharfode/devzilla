@@ -77,15 +77,15 @@ export default function AdminDashboard() {
             <p className="text-gray-400 text-sm">Manage pipelines, margins, and client blueprints securely.</p>
           </div>
           <div className="flex gap-4">
-            <button 
+            <button
               onClick={handleSeedDatabase}
               disabled={isSeeding}
               className="bg-gray-800 hover:bg-gray-700 text-white font-bold px-6 py-2.5 rounded-lg text-sm shadow-lg transition-all flex items-center gap-2 border border-gray-700"
             >
-              <i className={`fa-solid ${isSeeding ? 'fa-spinner fa-spin' : 'fa-database text-blue-400'}`}></i> 
+              <i className={`fa-solid ${isSeeding ? 'fa-spinner fa-spin' : 'fa-database text-blue-400'}`}></i>
               {isSeeding ? 'Pushing Data...' : 'Seed Firebase'}
             </button>
-            <button 
+            <button
               onClick={handleNewBlueprint}
               className="bg-primary hover:bg-primary-dark text-dark font-bold px-6 py-2.5 rounded-lg text-sm shadow-lg transition-transform hover:scale-105 flex items-center gap-2"
             >
@@ -97,7 +97,7 @@ export default function AdminDashboard() {
         <div className="space-y-8">
           {/* We pass a callback so the table can tell us which client to edit */}
           <MasterCRM onSelectClient={setSelectedClientId} />
-          
+
           {selectedClientId && (
             <div id="shadow-editor">
               <ShadowEditor key={selectedClientId} clientId={selectedClientId} />
