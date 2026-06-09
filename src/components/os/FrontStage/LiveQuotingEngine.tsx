@@ -12,7 +12,7 @@ const PREBUILT_CUSTOMS = [
 ];
 
 export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
-  const { currentClient, initClient, setIndustry, setBasePackage, toggleAddon, toggleSubFeature, addCustomFeature, removeCustomFeature, updateCustomFeature, updateInfrastructure } = useAgencyStore();
+  const { currentClient, initClient, setIndustry, setBasePackage, toggleAddon, toggleSubFeature, addCustomFeature, removeCustomFeature, updateCustomFeature, updateInfrastructure, addSpecialIncentive, removeSpecialIncentive } = useAgencyStore();
 
   const [customName, setCustomName] = useState('');
   const [customPrice, setCustomPrice] = useState('');
