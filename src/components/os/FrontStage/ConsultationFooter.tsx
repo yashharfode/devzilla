@@ -161,7 +161,7 @@ export default function ConsultationFooter() {
     doc.text("Terms & Conditions:", 14, finalY);
     doc.setTextColor(100, 116, 139);
     doc.setFontSize(8);
-    doc.text("1. 50% advance payment required to commence work.", 14, finalY + 6);
+    doc.text(`1. ${currentClient.publicView.paymentMilestone === '100' ? '100%' : currentClient.publicView.paymentMilestone === '50_50' ? '50%' : '40%'} advance payment required to commence work.`, 14, finalY + 6);
     doc.text("2. Proposal valid for 15 days from the date of issue.", 14, finalY + 11);
     doc.text("3. Infrastructure costs are recurring and must be renewed before expiry.", 14, finalY + 16);
 
@@ -191,9 +191,21 @@ export default function ConsultationFooter() {
             </div>
           )}
           <div className="shrink-0 border-l border-gray-200 pl-4 md:pl-8">
-            <div className="text-[10px] text-[#0f172a] uppercase tracking-widest font-bold mb-0.5">Initial Investment</div>
+            <div className="flex items-center gap-2 mb-0.5">
+              <div className="text-[10px] text-[#0f172a] uppercase tracking-widest font-bold">Initial Investment</div>
+              {currentClient.publicView.paymentMilestone === '50_50' && (
+                <span className="bg-yellow-100 text-yellow-800 text-[9px] px-1.5 py-0.5 rounded font-bold">50% Advance</span>
+              )}
+              {currentClient.publicView.paymentMilestone === '40_30_30' && (
+                <span className="bg-blue-100 text-blue-800 text-[9px] px-1.5 py-0.5 rounded font-bold">40% Advance</span>
+              )}
+            </div>
             <div className="text-xl md:text-2xl font-bold text-[#0f172a] font-mono">
-              ₹{currentClient.publicView.finalPrice.toLocaleString('en-IN')}
+              ₹{(
+                currentClient.publicView.paymentMilestone === '100' ? currentClient.publicView.finalPrice :
+                currentClient.publicView.paymentMilestone === '50_50' ? Math.round(currentClient.publicView.finalPrice * 0.5) :
+                Math.round(currentClient.publicView.finalPrice * 0.4)
+              ).toLocaleString('en-IN')}
             </div>
           </div>
           {currentClient.publicView.recurringFromYear2 > 0 && (

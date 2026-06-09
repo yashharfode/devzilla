@@ -44,6 +44,14 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
 
   return (
     <div className="w-full space-y-12 pb-32" id="blueprint-content">
+      {/* Deal Urgency Banner */}
+      {publicView.urgencyBanner && (
+        <div className="bg-red-500 text-white p-3 rounded-xl shadow-lg flex items-center justify-center gap-3 font-bold animate-pulse text-sm md:text-base border border-red-400">
+          <i className="fa-solid fa-clock"></i>
+          {publicView.urgencyBanner}
+        </div>
+      )}
+
       {/* Top Controls: Industry Selector */}
       <div className="bg-white p-6 md:p-8 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-consultation-primary to-consultation-blue"></div>
@@ -259,6 +267,48 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
           </div>
         </div>
       </div>
+
+      {/* Competitor Comparison Matrix */}
+      {publicView.showCompetitorMatrix && (
+        <div>
+          <h3 className="text-2xl font-bold text-[#1e293b] mb-6 border-b border-gray-200 pb-4 inline-block pr-12 font-heading tracking-tight">
+            <span className="text-[#0d9488] mr-3">⭐</span> Why DevZilla?
+          </h3>
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-[#f8fafc] text-[#64748b] border-b border-gray-200">
+                <tr>
+                  <th className="px-6 py-4 font-bold">Feature</th>
+                  <th className="px-6 py-4 font-bold text-center bg-[#0d9488]/5 text-[#0d9488]">DevZilla</th>
+                  <th className="px-6 py-4 font-bold text-center">Freelancers / Generic Agency</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                <tr>
+                  <td className="px-6 py-4 font-medium text-[#1e293b]">Turnaround Time</td>
+                  <td className="px-6 py-4 text-center font-bold text-[#0d9488] bg-[#0d9488]/5">5-10 Days</td>
+                  <td className="px-6 py-4 text-center text-gray-500">3-6 Weeks</td>
+                </tr>
+                <tr>
+                  <td className="px-6 py-4 font-medium text-[#1e293b]">Hidden Costs</td>
+                  <td className="px-6 py-4 text-center font-bold text-[#0d9488] bg-[#0d9488]/5">Zero. 100% Transparent.</td>
+                  <td className="px-6 py-4 text-center text-gray-500">High (Plugins, Maintenance)</td>
+                </tr>
+                <tr>
+                  <td className="px-6 py-4 font-medium text-[#1e293b]">Conversion Focused</td>
+                  <td className="px-6 py-4 text-center font-bold text-[#0d9488] bg-[#0d9488]/5">Built-in Sales Funnels</td>
+                  <td className="px-6 py-4 text-center text-gray-500">Just a Brochure</td>
+                </tr>
+                <tr>
+                  <td className="px-6 py-4 font-medium text-[#1e293b]">Post-Launch Support</td>
+                  <td className="px-6 py-4 text-center font-bold text-[#0d9488] bg-[#0d9488]/5">Dedicated WhatsApp Channel</td>
+                  <td className="px-6 py-4 text-center text-gray-500">Email only / No Response</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Infrastructure */}
       <div>
