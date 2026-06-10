@@ -3,8 +3,13 @@ import { agencyContext } from '../config/agencyContext';
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
 export const OpenRouterAgent = {
-  async generateJSON(prompt: string, model = "nvidia/nemotron-3-super-120b-a12b:free") {
+  async generateJSON(prompt: string, model = "nvidia/nemotron-3-super-120b-a12b:free", history: any[] = []) {
     if (!OPENROUTER_API_KEY) throw new Error("OPENROUTER_API_KEY is missing in .env.local");
+
+    const formattedHistory = history.map(msg => ({
+      role: msg.role === 'assistant' ? 'assistant' : 'user',
+      content: msg.content
+    }));
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
@@ -19,6 +24,7 @@ export const OpenRouterAgent = {
             role: "system", 
             content: `You are an elite software agency manager. You must reply ONLY in valid JSON format. No markdown, no backticks, no explanations.\n\n${agencyContext}` 
           },
+          ...formattedHistory,
           { role: "user", content: prompt }
         ],
         response_format: { type: "json_object" } 
@@ -40,7 +46,7 @@ export const OpenRouterAgent = {
   }
 };
 
-export const generateRequirementAnalysis = async (clientInput: string, industry: string) => {
+export const generateRequirementAnalysis = async (clientInput: string, industry: string, history: any[] = [], model = "nvidia/nemotron-3-super-120b-a12b:free") => {
   const prompt = `
 Analyze these raw client requirements for 'DevZilla Agency OS'.
 Client Industry: ${industry}
@@ -59,10 +65,10 @@ EXPECTED OUTPUT FORMAT (Follow strictly):
   "nextAction": "Send Proposal with 50/50 milestone"
 }
 `;
-  return await OpenRouterAgent.generateJSON(prompt);
+  return await OpenRouterAgent.generateJSON(prompt, model, history);
 };
 
-export const generateSalesCoachResponse = async (objection: string, industry: string) => {
+export const generateSalesCoachResponse = async (objection: string, industry: string, history: any[] = [], model = "nvidia/nemotron-3-super-120b-a12b:free") => {
   const prompt = `
 You are a persuasive Sales Coach for 'DevZilla Web Agency'.
 The client (Industry: ${industry}) gave this objection: "${objection}"
@@ -79,10 +85,10 @@ EXPECTED OUTPUT FORMAT (Follow strictly):
   ]
 }
 `;
-  return await OpenRouterAgent.generateJSON(prompt);
+  return await OpenRouterAgent.generateJSON(prompt, model, history);
 };
 
-export const generatePricingWizard = async (input: string, category: string) => {
+export const generatePricingWizard = async (input: string, category: string, model = "nvidia/nemotron-3-super-120b-a12b:free") => {
   const prompt = `
 You are a structural data generator for 'DevZilla Web Agency'.
 The admin wants to create or update a Pricing Package in the database for the category: "${category}".
@@ -104,6 +110,6 @@ EXPECTED OUTPUT FORMAT (Strict JSON):
   "freeServices": ["1 Month Free Maintenance", "Free Logo"]
 }
 `;
-  return await OpenRouterAgent.generateJSON(prompt);
+  return await OpenRouterAgent.generateJSON(prompt, model);
 };
 

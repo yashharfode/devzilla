@@ -1,6 +1,8 @@
 'use client';
-import { useState, useMemo } from 'react';
-import { useAgencyStore } from '../../../store/useAgencyStore';
+import { useState, useMemo, useEffect } from 'react';
+import { useAgencyStore, ClientDocument } from '../../../store/useAgencyStore';
+import { db } from '../../../config/firebase';
+import { collection, onSnapshot, query, setDoc, doc, deleteDoc } from 'firebase/firestore';
 import Link from 'next/link';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 
@@ -25,11 +27,39 @@ export default function MasterCRM({ onSelectClient }: { onSelectClient?: (id: st
   const [generatedPackage, setGeneratedPackage] = useState<any>(null); // Holds the parsed JSON
   const [pricingCategory, setPricingCategory] = useState('restaurant');
   const [customCategories, setCustomCategories] = useState<string[]>([]);
+  const [wizardModel, setWizardModel] = useState("nvidia/nemotron-3-super-120b-a12b:free");
+  const [pricingPackages, setPricingPackages] = useState<any[]>([]);
+
+  // Real-time Firestore Sync for Clients & Pricing
+  useEffect(() => {
+    const qClients = query(collection(db, 'clients'));
+    const unsubClients = onSnapshot(qClients, (snapshot) => {
+      const liveClients: ClientDocument[] = [];
+      snapshot.forEach(doc => {
+        liveClients.push({ ...doc.data(), id: doc.id } as ClientDocument);
+      });
+      useAgencyStore.setState({ clients: liveClients });
+    });
+
+    const qPricing = query(collection(db, 'pricing_packages'));
+    const unsubPricing = onSnapshot(qPricing, (snapshot) => {
+      const livePkgs: any[] = [];
+      snapshot.forEach(doc => {
+        livePkgs.push({ ...doc.data(), firebaseId: doc.id });
+      });
+      setPricingPackages(livePkgs);
+    });
+
+    return () => {
+      unsubClients();
+      unsubPricing();
+    };
+  }, []);
 
   // Analytics Calculations
   const totalRevenue = useMemo(() => clients.reduce((sum, c) => sum + (c.publicView.finalPrice || 0), 0), [clients]);
   const wonClients = clients.filter(c => c.privateView.dealStatus === 'won');
-  const conversionRate = clients.length ? Math.round((wonClients.length / clients.length) * 100) : 0;
+  const conversionRate = useMemo(() => leads.length > 0 ? Math.round((clients.length / (leads.length + clients.length)) * 100) : 0, [clients, leads]);
   
   const industryData = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -72,24 +102,22 @@ export default function MasterCRM({ onSelectClient }: { onSelectClient?: (id: st
     setGeneratedPackage(null);
     
     try {
-      // Calling the API Route (mocked response logic here for immediate visual feedback if API not connected)
       const res = await fetch('/api/assistant', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'pricing_wizard',
           industry: pricingCategory,
-          input: pricingPrompt
+          input: pricingPrompt,
+          model: wizardModel
         })
       });
       const data = await res.json();
       
-      // If the API isn't wired yet for pricing_wizard, we mock a structural match for demo
       if(!res.ok) throw new Error("API Route requires update for pricing_wizard action.");
       
       setGeneratedPackage(data);
     } catch(err) {
-      // Mocking the structure exactly to the BasePackage schema for the UI demonstration
       setTimeout(() => {
         setGeneratedPackage({
           id: pricingPrompt.toLowerCase().replace(/[^a-z0-9]/g, '_').substring(0,15) || 'new_package',
@@ -107,11 +135,27 @@ export default function MasterCRM({ onSelectClient }: { onSelectClient?: (id: st
     }
   };
 
-  const savePricingPackage = () => {
-    // Here we would push to Firebase: db.collection('settings').doc('pricing')
-    alert("Saved to Firebase Configuration successfully!");
-    setGeneratedPackage(null);
-    setPricingPrompt('');
+  const savePricingPackage = async () => {
+    if (!generatedPackage) return;
+    try {
+      const pkgId = generatedPackage.firebaseId || generatedPackage.id || Date.now().toString();
+      await setDoc(doc(db, 'pricing_packages', pkgId), generatedPackage);
+      alert("✅ Saved to Firebase successfully!");
+      setGeneratedPackage(null);
+      setPricingPrompt('');
+    } catch (e: any) {
+      console.error(e);
+      alert("❌ Firebase Error: " + e.message);
+    }
+  };
+
+  const deletePricingPackage = async (firebaseId: string) => {
+    try {
+      await deleteDoc(doc(db, 'pricing_packages', firebaseId));
+    } catch (e: any) {
+      console.error(e);
+      alert("Error deleting: " + e.message);
+    }
   };
 
   return (
@@ -143,17 +187,17 @@ export default function MasterCRM({ onSelectClient }: { onSelectClient?: (id: st
           <p className="text-gray-400 text-xs mt-1 font-medium tracking-wide">Master CRM & Revenue Analytics</p>
         </div>
         
-        <div className="flex gap-2 bg-[#020510] p-1 rounded-xl border border-teal-500/20 whitespace-nowrap">
-          <button onClick={() => setActiveTab('analytics')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'analytics' ? 'bg-teal-500/20 text-teal-400 border border-teal-500/50 shadow-[0_0_15px_rgba(13,148,136,0.2)]' : 'text-gray-500 hover:text-gray-300 border border-transparent'}`}>
+        <div className="flex flex-wrap gap-2 bg-[#020510] p-2 rounded-xl border border-gray-800 overflow-x-auto">
+          <button onClick={() => setActiveTab('analytics')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${activeTab === 'analytics' ? 'bg-teal-500/20 text-teal-400 border border-teal-500/50 shadow-[0_0_15px_rgba(20,184,166,0.2)]' : 'text-gray-500 hover:text-gray-300 border border-transparent'}`}>
             <i className="fa-solid fa-chart-pie mr-1"></i> Analytics
           </button>
-          <button onClick={() => setActiveTab('pipeline')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'pipeline' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.2)]' : 'text-gray-500 hover:text-gray-300 border border-transparent'}`}>
+          <button onClick={() => setActiveTab('pipeline')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${activeTab === 'pipeline' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.2)]' : 'text-gray-500 hover:text-gray-300 border border-transparent'}`}>
             <i className="fa-solid fa-filter mr-1"></i> Pipeline ({leads.filter(l => l.status !== 'converted' && l.status !== 'not_interested').length})
           </button>
-          <button onClick={() => setActiveTab('clients')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'clients' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.2)]' : 'text-gray-500 hover:text-gray-300 border border-transparent'}`}>
+          <button onClick={() => setActiveTab('clients')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${activeTab === 'clients' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.2)]' : 'text-gray-500 hover:text-gray-300 border border-transparent'}`}>
             <i className="fa-solid fa-users mr-1"></i> Clients
           </button>
-          <button onClick={() => setActiveTab('pricing')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'pricing' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/50 shadow-[0_0_15px_rgba(139,92,246,0.2)]' : 'text-gray-500 hover:text-gray-300 border border-transparent'}`}>
+          <button onClick={() => setActiveTab('pricing')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${activeTab === 'pricing' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/50 shadow-[0_0_15px_rgba(139,92,246,0.2)]' : 'text-gray-500 hover:text-gray-300 border border-transparent'}`}>
             <i className="fa-solid fa-wand-magic-sparkles mr-1"></i> AI Pricing
           </button>
         </div>
@@ -165,7 +209,7 @@ export default function MasterCRM({ onSelectClient }: { onSelectClient?: (id: st
         {activeTab === 'analytics' && (
           <div className="space-y-6 animate-fade-in">
             {/* KPI Cards */}
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-[#050b1a] border border-teal-500/20 rounded-2xl p-6 shadow-lg relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-24 h-24 bg-teal-500/10 rounded-full blur-2xl group-hover:bg-teal-500/20 transition-all"></div>
                 <h3 className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Total Value</h3>
@@ -186,7 +230,7 @@ export default function MasterCRM({ onSelectClient }: { onSelectClient?: (id: st
             </div>
 
             {/* Charts Row */}
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="bg-[#050b1a] border border-gray-800 rounded-2xl p-6 shadow-lg">
                 <h3 className="text-gray-300 text-sm font-bold uppercase tracking-widest mb-6 flex items-center gap-2">
                   <i className="fa-solid fa-chart-area text-teal-400"></i> Revenue Trajectory
@@ -234,7 +278,7 @@ export default function MasterCRM({ onSelectClient }: { onSelectClient?: (id: st
         {/* --- LEADS PIPELINE TAB --- */}
         {activeTab === 'pipeline' && (
           <div className="animate-fade-in space-y-6">
-            <div className="bg-[#050b1a] border border-gray-800 rounded-2xl p-5 shadow-lg flex gap-4 items-end">
+            <div className="bg-[#050b1a] border border-gray-800 rounded-2xl p-5 shadow-lg flex flex-col md:flex-row gap-4 items-start md:items-end">
               <div className="flex-1">
                 <label className="text-gray-400 text-xs font-bold uppercase mb-1 block">Phone Number *</label>
                 <input type="text" placeholder="+91..." className="w-full bg-[#020510] border border-gray-700 rounded-lg p-2.5 text-white text-sm focus:border-yellow-500 focus:outline-none transition-colors" value={newLeadPhone} onChange={(e) => setNewLeadPhone(e.target.value)} />
@@ -386,7 +430,7 @@ export default function MasterCRM({ onSelectClient }: { onSelectClient?: (id: st
                 </div>
               </div>
               
-              <div className="flex gap-4">
+              <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex gap-2">
                   <select className="bg-[#020510] border border-gray-700 rounded-lg px-4 text-white text-sm focus:border-purple-500 outline-none w-40" value={pricingCategory} onChange={e=>setPricingCategory(e.target.value)}>
                     <option value="restaurant">Restaurant</option>
@@ -417,14 +461,25 @@ export default function MasterCRM({ onSelectClient }: { onSelectClient?: (id: st
                   onChange={(e) => setPricingPrompt(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleGeneratePricing()}
                 />
-                <button 
-                  onClick={handleGeneratePricing}
-                  disabled={isGeneratingPricing || !pricingPrompt}
-                  className="bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white font-bold px-6 py-3 rounded-lg transition-colors shadow-[0_0_15px_rgba(147,51,234,0.3)] whitespace-nowrap flex items-center gap-2"
-                >
-                  {isGeneratingPricing ? <i className="fa-solid fa-circle-notch fa-spin"></i> : <i className="fa-solid fa-bolt"></i>}
-                  Generate Format
-                </button>
+                <div className="flex flex-col gap-2">
+                  <select 
+                    className="bg-black/50 border border-gray-800 rounded p-1 text-[10px] text-gray-400 outline-none w-24 truncate self-end"
+                    value={wizardModel}
+                    onChange={(e) => setWizardModel(e.target.value)}
+                    title="Select AI Model"
+                  >
+                    <option value="nvidia/nemotron-3-super-120b-a12b:free">Nemotron 120B</option>
+                    <option value="liquid/lfm-2.5-1.2b-instruct:free">Liquid LFM (Fast)</option>
+                  </select>
+                  <button 
+                    onClick={handleGeneratePricing}
+                    disabled={isGeneratingPricing || !pricingPrompt}
+                    className="bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white font-bold px-6 py-3 rounded-lg transition-colors shadow-[0_0_15px_rgba(147,51,234,0.3)] whitespace-nowrap flex items-center gap-2"
+                  >
+                    {isGeneratingPricing ? <i className="fa-solid fa-circle-notch fa-spin"></i> : <i className="fa-solid fa-bolt"></i>}
+                    Generate Format
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -439,7 +494,7 @@ export default function MasterCRM({ onSelectClient }: { onSelectClient?: (id: st
                   <i className="fa-solid fa-user-shield"></i> Master Yash, verify and edit this AI-generated package:
                 </h3>
 
-                <div className="grid grid-cols-2 gap-6 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div>
                     <label className="text-gray-400 text-xs font-bold uppercase mb-1 block">Package Name</label>
                     <input type="text" className="w-full bg-[#020510] border border-gray-700 rounded-lg p-2.5 text-white text-sm" value={generatedPackage.name} onChange={(e) => setGeneratedPackage({...generatedPackage, name: e.target.value})} />
@@ -489,30 +544,26 @@ export default function MasterCRM({ onSelectClient }: { onSelectClient?: (id: st
             )}
             
             {/* Existing Manual Package List Mock */}
-            <div className="bg-[#020510] border border-gray-800 rounded-2xl p-6">
-              <h3 className="text-gray-400 text-sm font-bold uppercase tracking-widest mb-4">Current Firebase Database</h3>
-              <div className="flex items-center justify-between bg-gray-900/50 border border-gray-800 p-4 rounded-xl mb-2">
-                <div>
-                  <span className="text-white font-bold">Basic Bhojnalaya</span>
-                  <span className="ml-3 text-xs bg-gray-800 text-gray-400 px-2 py-1 rounded">Restaurant</span>
+            <div className="bg-white border border-gray-200 rounded-2xl p-6">
+              <h3 className="text-gray-500 text-sm font-bold uppercase tracking-widest mb-4">Current Firebase Database</h3>
+              
+              {pricingPackages.length === 0 && (
+                <div className="text-center text-gray-400 py-4 text-sm font-bold">No packages in Firebase yet.</div>
+              )}
+              
+              {pricingPackages.map(pkg => (
+                <div key={pkg.firebaseId} className="flex items-center justify-between bg-gray-100/50 border border-gray-200 p-4 rounded-xl mb-2">
+                  <div>
+                    <span className="text-[#1e293b] font-bold">{pkg.name}</span>
+                    <span className="ml-3 text-xs bg-gray-200 text-gray-500 px-2 py-1 rounded">Custom</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-green-600 font-mono font-bold">₹{pkg.price?.toLocaleString()}</span>
+                    <button className="text-gray-500 hover:text-[#0d9488]" title="Edit" onClick={() => setGeneratedPackage(pkg)}><i className="fa-solid fa-pencil"></i></button>
+                    <button className="text-gray-500 hover:text-red-500" title="Delete" onClick={() => deletePricingPackage(pkg.firebaseId)}><i className="fa-solid fa-trash"></i></button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-green-400 font-mono font-bold">₹12,999</span>
-                  <button className="text-gray-500 hover:text-blue-400" title="Edit Manually"><i className="fa-solid fa-pencil"></i></button>
-                  <button className="text-gray-500 hover:text-red-400" title="Delete"><i className="fa-solid fa-trash"></i></button>
-                </div>
-              </div>
-              <div className="flex items-center justify-between bg-gray-900/50 border border-gray-800 p-4 rounded-xl mb-2">
-                <div>
-                  <span className="text-white font-bold">Standard Restaurant</span>
-                  <span className="ml-3 text-xs bg-gray-800 text-gray-400 px-2 py-1 rounded">Restaurant</span>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-green-400 font-mono font-bold">₹17,999</span>
-                  <button className="text-gray-500 hover:text-blue-400" title="Edit Manually"><i className="fa-solid fa-pencil"></i></button>
-                  <button className="text-gray-500 hover:text-red-400" title="Delete"><i className="fa-solid fa-trash"></i></button>
-                </div>
-              </div>
+              ))}
             </div>
 
           </div>

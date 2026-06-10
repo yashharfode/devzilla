@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAgencyStore } from '../../../store/useAgencyStore';
 import { BasePackages, ModularAddons, BasePackageId, AddonId } from '../../../config/pricingDictionary';
 
@@ -16,6 +16,14 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
 
   const [customName, setCustomName] = useState('');
   const [customPrice, setCustomPrice] = useState('');
+  const packagesRef = useRef<HTMLDivElement>(null);
+
+  const scrollPackages = (direction: 'left' | 'right') => {
+    if (packagesRef.current) {
+      const scrollAmount = 400;
+      packagesRef.current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+    }
+  };
 
   useEffect(() => {
     if (!currentClient || currentClient.id !== clientId) {
@@ -79,16 +87,47 @@ export default function LiveQuotingEngine({ clientId }: { clientId: string }) {
 
       {/* Base Packages */}
       <div>
-        <h3 className="text-2xl font-bold text-[#1e293b] mb-6 border-b border-gray-200 pb-4 inline-block pr-12 font-heading tracking-tight">
-          <span className="text-[#0d9488] mr-3">1.</span> Base Infrastructure
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {(Object.entries(BasePackages) as [BasePackageId, typeof BasePackages[BasePackageId]][]).map(([id, pkg]) => {
+        <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-4 pr-0 md:pr-12">
+          <h3 className="text-2xl font-bold text-[#1e293b] font-heading tracking-tight">
+            <span className="text-[#0d9488] mr-3">1.</span> Base Infrastructure
+          </h3>
+          <div className="flex gap-2">
+            <button 
+              onClick={() => scrollPackages('left')}
+              className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200 transition-colors shadow-sm"
+            >
+              <i className="fa-solid fa-chevron-left"></i>
+            </button>
+            <button 
+              onClick={() => scrollPackages('right')}
+              className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200 transition-colors shadow-sm"
+            >
+              <i className="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+        <div 
+          ref={packagesRef}
+          className="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory hide-scrollbar [&::-webkit-scrollbar]:hidden"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {(Object.entries(BasePackages) as [BasePackageId, typeof BasePackages[BasePackageId]][])
+            .filter(([id]) => {
+              if (industry === 'Hospital') {
+                return id.includes('clinic') || id.includes('hospital');
+              }
+              if (industry === 'Restaurant' || industry === 'Bhojnalaya') {
+                return id.includes('bhojnalaya') || id.includes('restaurant');
+              }
+              // Default to General packages for 'General' or any other unmapped industry
+              return id.includes('general');
+            })
+            .map(([id, pkg]) => {
             const isActive = publicView.basePackage === id;
             return (
               <div 
                 key={id}
-                className={`rounded-3xl p-6 md:p-8 transition-all border ${
+                className={`rounded-3xl p-6 md:p-8 transition-all border w-full md:w-[380px] shrink-0 snap-start flex-none ${
                   isActive 
                     ? 'bg-white border-[#0d9488] shadow-[0_15px_30px_-10px_rgba(186,242,233,0.3)]' 
                     : 'bg-[#f8fafc] border-gray-100 hover:border-gray-300 hover:bg-white'

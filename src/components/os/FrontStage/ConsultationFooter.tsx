@@ -4,7 +4,7 @@ import { useAgencyStore } from '../../../store/useAgencyStore';
 import { BasePackages, ModularAddons } from '../../../config/pricingDictionary';
 import { toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { generateDetailedPDF } from '../../../lib/pdfGenerator';
 
 export default function ConsultationFooter() {
   const { currentClient } = useAgencyStore();
@@ -49,123 +49,7 @@ export default function ConsultationFooter() {
   };
 
   const handlePrintProposal = () => {
-    const doc = new jsPDF();
-    
-    // Header
-    doc.setFontSize(24);
-    doc.setTextColor(30, 41, 59);
-    doc.text("DevZilla Agency", 14, 20);
-    
-    doc.setFontSize(12);
-    doc.setTextColor(100, 116, 139);
-    doc.text("Official Project Proposal", 14, 28);
-    
-    // Client Info
-    doc.setFontSize(10);
-    doc.setTextColor(30, 41, 59);
-    doc.text(`Client: ${currentClient.clientName}`, 14, 45);
-    doc.text(`Business: ${currentClient.businessName}`, 14, 51);
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 57);
-
-    let startY = 65;
-
-    if (currentClient.publicView.clientRequirements) {
-      doc.setFontSize(10);
-      doc.setTextColor(13, 148, 136); // Teal color for header
-      doc.text("Project Requirements:", 14, 65);
-      
-      doc.setFontSize(9);
-      doc.setTextColor(100, 116, 139);
-      const splitRequirements = doc.splitTextToSize(currentClient.publicView.clientRequirements, 180);
-      doc.text(splitRequirements, 14, 71);
-      
-      startY = 71 + (splitRequirements.length * 5) + 10;
-    }
-
-    // Prepare Table Data
-    const tableBody = [];
-    
-    const basePkg = BasePackages[currentClient.publicView.basePackage];
-    tableBody.push([{ content: `Base Package: ${basePkg.name}`, styles: { fontStyle: 'bold' } }, `INR ${basePkg.price.toLocaleString('en-IN')}`]);
-    
-    // Included Features
-    basePkg.features.forEach(feat => {
-      if (!currentClient.publicView.uncheckedSubFeatures.includes(feat.id)) {
-        tableBody.push([`  ✓ ${feat.name}`, { content: 'Included', styles: { textColor: [100, 116, 139] } }]);
-      }
-    });
-
-    // Free Services
-    if (basePkg.freeServices && basePkg.freeServices.length > 0) {
-      basePkg.freeServices.forEach(free => {
-        tableBody.push([`  🎁 Free Bonus: ${free}`, { content: 'Included', styles: { textColor: [13, 148, 136], fontStyle: 'bold' } }]);
-      });
-    }
-    
-    // Removed Features
-    currentClient.publicView.uncheckedSubFeatures.forEach(subId => {
-      const feat = basePkg.features.find(f => f.id === subId);
-      if (feat) {
-        tableBody.push([`  - Removed: ${feat.name}`, `-INR ${feat.deductionValue.toLocaleString('en-IN')}`]);
-      }
-    });
-
-    currentClient.publicView.selectedAddons.forEach(addonId => {
-      const addon = ModularAddons[addonId];
-      if (addon) {
-        tableBody.push([`Add-on: ${addon.name}`, `INR ${addon.price.toLocaleString('en-IN')}`]);
-      }
-    });
-
-    currentClient.publicView.customFeatures.forEach(cf => {
-      tableBody.push([`Custom: ${cf.name}`, `INR ${cf.price.toLocaleString('en-IN')}`]);
-    });
-    
-    currentClient.publicView.specialIncentives.forEach(inc => {
-      tableBody.push([`Bonus Incentive: ${inc.reason}`, `-INR ${inc.amount.toLocaleString('en-IN')}`]);
-    });
-    
-    tableBody.push([{ content: 'Total One-Time Setup', styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } }, { content: `INR ${currentClient.publicView.oneTimePrice.toLocaleString('en-IN')}`, styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } }]);
-
-    const infra = currentClient.publicView.infrastructure;
-    if (currentClient.publicView.dueTodayInfra > 0 || currentClient.publicView.recurringFromYear2 > 0) {
-       tableBody.push([{ content: `Infrastructure`, styles: { fontStyle: 'bold', textColor: [13, 148, 136] } }, '']);
-       if (infra.hostingProvider === 'devzilla') {
-         tableBody.push([`  Web Hosting (DevZilla Cloud - 1st Year)`, `INR ${(3000).toLocaleString('en-IN')}`]);
-         tableBody.push([`  Web Hosting (Renewal)`, `INR 3,000 / Yr`]);
-       } else if (infra.hostingProvider === 'assisted' && infra.hostingYearlyCost > 0) {
-         tableBody.push([`  Web Hosting (Assisted Setup - 1st Year)`, `INR ${(infra.hostingYearlyCost).toLocaleString('en-IN')}`]);
-         tableBody.push([`  Web Hosting (Renewal)`, `INR ${(infra.hostingYearlyCost).toLocaleString('en-IN')} / Yr`]);
-       }
-
-       if (infra.domainStatus === 'new') {
-         tableBody.push([`  Domain Name (1st Year)`, `INR ${(infra.domainFirstYearCost).toLocaleString('en-IN')}`]);
-         tableBody.push([`  Domain Name (Renewal)`, `INR ${(infra.domainRenewalCost).toLocaleString('en-IN')} / Yr`]);
-       }
-       tableBody.push([{ content: 'Initial Investment (Setup + 1st Year Infra)', styles: { fontStyle: 'bold', fillColor: [240, 253, 250] } }, { content: `INR ${currentClient.publicView.finalPrice.toLocaleString('en-IN')}`, styles: { fontStyle: 'bold', fillColor: [240, 253, 250] } }]);
-    }
-
-    autoTable(doc, {
-      startY: startY,
-      head: [['Description', 'Amount']],
-      body: tableBody as any,
-      theme: 'grid',
-      headStyles: { fillColor: [30, 41, 59] },
-      columnStyles: { 1: { halign: 'right' } }
-    });
-
-    // @ts-expect-error - jspdf-autotable extends jsPDF type dynamically
-    const finalY = doc.lastAutoTable.finalY + 20;
-    doc.setFontSize(10);
-    doc.setTextColor(30, 41, 59);
-    doc.text("Terms & Conditions:", 14, finalY);
-    doc.setTextColor(100, 116, 139);
-    doc.setFontSize(8);
-    doc.text(`1. ${currentClient.publicView.paymentMilestone === '100' ? '100%' : currentClient.publicView.paymentMilestone === '50_50' ? '50%' : '40%'} advance payment required to commence work.`, 14, finalY + 6);
-    doc.text("2. Proposal valid for 15 days from the date of issue.", 14, finalY + 11);
-    doc.text("3. Infrastructure costs are recurring and must be renewed before expiry.", 14, finalY + 16);
-
-    doc.save(`Proposal_${currentClient.clientName.replace(/\s+/g, '_')}.pdf`);
+    generateDetailedPDF(currentClient);
   };
 
   return (

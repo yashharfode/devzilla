@@ -103,8 +103,23 @@ export default function ClientBrief({ clientId, onNext }: { clientId: string, on
       }
       selectClient(clientId);
     } else {
+      // First check LocalStorage
+      const savedDraft = localStorage.getItem(`client_draft_${clientId}`);
+      if (savedDraft) {
+        try {
+          const parsedDraft = JSON.parse(savedDraft);
+          if (Object.keys(parsedDraft).length > 0) {
+            setAnswers(parsedDraft);
+            return;
+          }
+        } catch (e) {
+          console.error('Failed to parse draft', e);
+        }
+      }
+
+      // Fallback to store
       const reqString = currentClient.publicView.clientRequirements || '';
-      if (reqString) {
+      if (reqString && Object.keys(answers).length === 0) {
         const parsed: Record<string, string> = {};
         const lines = reqString.split('\n\n');
         lines.forEach(line => {
@@ -113,7 +128,6 @@ export default function ClientBrief({ clientId, onNext }: { clientId: string, on
             const qText = match[1];
             const aText = match[2];
             let foundId = null;
-            // Search all sections to find the matching question
             for (const section of FORM_SECTIONS) {
               const q = section.questions.find(fq => fq.question === qText);
               if (q) {
@@ -128,8 +142,7 @@ export default function ClientBrief({ clientId, onNext }: { clientId: string, on
             parsed['additional'] = reqString;
           }
         });
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setAnswers(prev => Object.keys(prev).length === 0 ? parsed : prev);
+        setAnswers(parsed);
       }
     }
   }, [clientId, currentClient, selectClient, clients]);
@@ -156,6 +169,7 @@ export default function ClientBrief({ clientId, onNext }: { clientId: string, on
   const handleAnswerChange = (qId: string, value: string) => {
     const newAnswers = { ...answers, [qId]: value };
     setAnswers(newAnswers);
+    localStorage.setItem(`client_draft_${clientId}`, JSON.stringify(newAnswers));
     updateGlobalStore(newAnswers);
   };
 

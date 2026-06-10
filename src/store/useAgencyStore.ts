@@ -9,6 +9,7 @@ export type ClientDocument = {
   id: string;
   clientName: string;
   businessName: string;
+  clientPhone?: string;
   industry: string;
   publicView: {
     basePackage: BasePackageId;
@@ -75,7 +76,7 @@ interface AgencyState {
   removeCustomFeature: (id: string) => void;
   updateCustomFeature: (id: string, name: string, price: number) => void;
   updateInfrastructure: (updates: Partial<ClientDocument['publicView']['infrastructure']>) => void;
-  updateClientDetails: (updates: Partial<Pick<ClientDocument, 'clientName' | 'businessName'> & { clientRequirements?: string }>) => void;
+  updateClientDetails: (updates: Partial<Pick<ClientDocument, 'clientName' | 'businessName' | 'clientPhone'> & { clientRequirements?: string }>) => void;
   toggleAddon: (addon: AddonId) => void;
   addSpecialIncentive: (amount: number, reason: string) => void;
   removeSpecialIncentive: (id: string) => void;
@@ -363,6 +364,7 @@ export const useAgencyStore = create<AgencyState>((set, get) => ({
       ...state.currentClient,
       clientName: updates.clientName !== undefined ? updates.clientName : state.currentClient.clientName,
       businessName: updates.businessName !== undefined ? updates.businessName : state.currentClient.businessName,
+      clientPhone: updates.clientPhone !== undefined ? updates.clientPhone : state.currentClient.clientPhone,
       publicView: {
         ...state.currentClient.publicView,
         clientRequirements: updates.clientRequirements !== undefined ? updates.clientRequirements : state.currentClient.publicView.clientRequirements
