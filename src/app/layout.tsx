@@ -20,6 +20,9 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: "DevZilla - Premium Website Packages for Restaurants",
   description: "DevZilla provides premium website packages for restaurants and cafes.",
+  verification: {
+    google: "PJV7aMem6uIK8VjPkQsV3OscOmSlRbu-8gggahJGydI",
+  },
 };
 
 export default function RootLayout({
