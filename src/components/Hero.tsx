@@ -35,7 +35,7 @@ export default function Hero() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           
           {/* Left Content */}
-          <div data-aos="fade-up" className="order-2 lg:order-1 relative z-20">
+          <div className="order-2 lg:order-1 relative z-20">
             <div className="inline-flex items-center gap-2 bg-[#0d9488]/10 border border-[#0d9488]/30 rounded-full px-5 py-2.5 mb-8 shadow-[0_0_20px_rgba(13,148,136,0.15)] backdrop-blur-md">
               <span className="relative flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0d9488] opacity-75"></span>
@@ -90,7 +90,7 @@ export default function Hero() {
           </div>
           
           {/* Right Visual Content */}
-          <div data-aos="fade-left" data-aos-delay="200" className="relative order-1 lg:order-2 mt-10 lg:mt-0 perspective-1000 z-30">
+          <div className="relative order-1 lg:order-2 mt-10 lg:mt-0 perspective-1000 z-30">
             
             {/* The Main Mockup Frame */}
             <div className="relative z-10 w-full aspect-[4/3] md:aspect-video bg-[#1e293b] rounded-t-xl rounded-b-lg border border-gray-700 shadow-2xl flex flex-col overflow-hidden transform rotate-y-[-5deg] rotate-x-[5deg] hover:rotate-y-0 hover:rotate-x-0 transition-transform duration-700">
