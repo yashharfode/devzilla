@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export default function Testimonials() {
   const testimonials = [
     {
@@ -72,7 +74,13 @@ export default function Testimonials() {
               </p>
               
               <div className="flex items-center gap-4 border-t border-gray-800 pt-6">
-                <img src={testimonial.image} alt={testimonial.name} className="w-14 h-14 rounded-full border-2 border-primary/50" />
+                <Image 
+                  src={testimonial.image} 
+                  alt={testimonial.name} 
+                  width={56} 
+                  height={56} 
+                  className="w-14 h-14 rounded-full border-2 border-primary/50 object-cover" 
+                />
                 <div>
                   <h4 className="font-bold text-white">{testimonial.name}</h4>
                   <p className="text-primary text-sm font-medium">{testimonial.role}</p>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 type Category = {
   name: string;
@@ -47,10 +48,11 @@ export default function CategoryGallery({ categories, variant }: { categories: C
                   data-aos="fade-up"
                   data-aos-delay={(imgIndex % 3) * 100}
                 >
-                  <img 
+                  <Image 
                     src={imagePath} 
                     alt={`${category.name} Website`} 
-                    className="w-full h-full object-cover object-top transition-transform duration-[6000ms] ease-linear group-hover:object-bottom"
+                    fill
+                    className="object-cover object-top transition-transform duration-[6000ms] ease-linear group-hover:object-bottom"
                   />
                   <div className="absolute inset-0 bg-dark/10 group-hover:bg-transparent transition-colors duration-500"></div>
                   

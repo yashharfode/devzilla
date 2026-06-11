@@ -1,11 +1,13 @@
 import Hero from '@/components/Hero';
-import Benefits from '@/components/Benefits';
-import PortfolioShowcase from '@/components/PortfolioShowcase';
-import WebsiteVsNoWebsite from '@/components/WebsiteVsNoWebsite';
-import Pricing from '@/components/Pricing';
-import Testimonials from '@/components/Testimonials';
-import FAQ from '@/components/FAQ';
-import FinalCTA from '@/components/FinalCTA';
+import dynamic from 'next/dynamic';
+
+const Benefits = dynamic(() => import('@/components/Benefits'));
+const PortfolioShowcase = dynamic(() => import('@/components/PortfolioShowcase'), { ssr: false });
+const WebsiteVsNoWebsite = dynamic(() => import('@/components/WebsiteVsNoWebsite'));
+const Pricing = dynamic(() => import('@/components/Pricing'));
+const Testimonials = dynamic(() => import('@/components/Testimonials'), { ssr: false });
+const FAQ = dynamic(() => import('@/components/FAQ'), { ssr: false });
+const FinalCTA = dynamic(() => import('@/components/FinalCTA'));
 
 export default function Home() {
   return (

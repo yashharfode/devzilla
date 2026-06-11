@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
 const industries = [
@@ -109,11 +110,13 @@ export default function Hero() {
                {/* Mockup Images */}
                <div className="relative flex-1 w-full bg-dark overflow-hidden">
                  {industries.map((industry, idx) => (
-                   <img 
+                   <Image 
                      key={industry.image}
                      src={industry.image} 
                      alt={`${industry.name} Website Mockup`} 
-                     className={`absolute inset-0 w-full h-full object-cover object-top transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                     fill
+                     priority={idx === 0}
+                     className={`object-cover object-top transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
                        idx === currentIndex ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-110 blur-sm'
                      }`} 
                    />
