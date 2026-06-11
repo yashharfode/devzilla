@@ -37,6 +37,7 @@ export default function Navbar() {
         <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-300">
           <Link href="/#home" className="hover:text-white transition">Home</Link>
           <Link href="/portfolio" className="hover:text-primary transition">Portfolio</Link>
+          <Link href="/seo" className="hover:text-primary transition">SEO</Link>
           <Link href="/#pricing" className="hover:text-white transition">Pricing</Link>
           <Link href="/#features" className="hover:text-white transition">Features</Link>
         </div>
@@ -59,6 +60,7 @@ export default function Navbar() {
         <div className="md:hidden absolute top-full left-0 w-full glass-panel border-t border-gray-800 shadow-xl flex flex-col py-4 px-6 space-y-4">
           <Link href="/#home" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-white font-medium mobile-link">Home</Link>
           <Link href="/portfolio" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-white font-medium mobile-link">Portfolio</Link>
+          <Link href="/seo" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-white font-medium mobile-link">SEO Services</Link>
           <Link href="/#pricing" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-white font-medium mobile-link">Pricing</Link>
           <Link href="/#features" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-white font-medium mobile-link">Features</Link>
           <Link href="https://wa.me/919244161034" onClick={() => setIsMobileMenuOpen(false)} className="bg-gradient-primary px-6 py-2 rounded-full font-medium text-sm text-center mobile-link mt-2">Get A Free Quote</Link>

@@ -37,7 +37,7 @@ export default function Footer() {
             <ul className="space-y-3 text-gray-400 text-sm">
               <li><a href="#" className="hover:text-primary transition">Website Design</a></li>
               <li><a href="#" className="hover:text-primary transition">E-Commerce Websites</a></li>
-              <li><a href="#" className="hover:text-primary transition">SEO Optimization</a></li>
+              <li><Link href="/seo" className="hover:text-primary transition">SEO Optimization</Link></li>
               <li><a href="#" className="hover:text-primary transition">Restaurant Websites</a></li>
               <li><a href="#" className="hover:text-primary transition">Maintenance & Support</a></li>
             </ul>
