@@ -10,16 +10,18 @@ export default function Footer() {
     <footer className="bg-card border-t border-gray-800 pt-16 pb-8 mt-auto">
       <div className="container mx-auto px-6 lg:px-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-          <div>
-            <Link href="/" className="text-2xl font-heading font-bold flex items-center gap-2 mb-6">
-              <i className="fa-solid fa-code text-primary"></i> DevZilla
+          <div className="col-span-1 md:col-span-2 lg:col-span-1">
+            <Link href="/" className="text-2xl font-black tracking-tighter text-white mb-6 inline-block font-heading">
+              DEV<span className="text-primary">ZILLA</span>
             </Link>
-            <p className="text-gray-400 text-sm mb-6">We design & develop modern websites that help businesses grow and succeed in the digital world.</p>
+            <p className="text-gray-300 mb-6 leading-relaxed">
+              We build premium, high-converting digital experiences that help businesses scale their online revenue.
+            </p>
             <div className="flex space-x-4">
-              <a href="#" className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition text-gray-400 hover:text-white"><i className="fa-brands fa-facebook-f"></i></a>
-              <a href="#" className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition text-gray-400 hover:text-white"><i className="fa-brands fa-twitter"></i></a>
-              <a href="#" className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition text-gray-400 hover:text-white"><i className="fa-brands fa-linkedin-in"></i></a>
-              <a href="#" className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition text-gray-400 hover:text-white"><i className="fa-brands fa-instagram"></i></a>
+              <a href="#" aria-label="Visit our Facebook page" className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition text-gray-300 hover:text-white"><i className="fa-brands fa-facebook-f"></i></a>
+              <a href="#" aria-label="Visit our Twitter page" className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition text-gray-300 hover:text-white"><i className="fa-brands fa-twitter"></i></a>
+              <a href="#" aria-label="Visit our LinkedIn page" className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition text-gray-300 hover:text-white"><i className="fa-brands fa-linkedin-in"></i></a>
+              <a href="#" aria-label="Visit our Instagram page" className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition text-gray-300 hover:text-white"><i className="fa-brands fa-instagram"></i></a>
             </div>
           </div>
           <div>
