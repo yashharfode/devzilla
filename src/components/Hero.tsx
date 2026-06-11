@@ -13,8 +13,10 @@ const industries = [
 
 export default function Hero() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % industries.length);
     }, 4000);
@@ -109,18 +111,24 @@ export default function Hero() {
 
                {/* Mockup Images */}
                <div className="relative flex-1 w-full bg-dark overflow-hidden">
-                 {industries.map((industry, idx) => (
-                   <Image 
-                     key={industry.image}
-                     src={industry.image} 
-                     alt={`Premium custom web design and development mockup for ${industry.name} businesses by DevZilla Agency`} 
-                     fill
-                     priority={idx === 0}
-                     className={`object-cover object-top transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-                       idx === currentIndex ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-110 blur-sm'
-                     }`} 
-                   />
-                 ))}
+                 {industries.map((industry, idx) => {
+                   // Critical LCP Fix: Only render the first image on initial load. 
+                   // Defer rendering of hidden images until after hydration.
+                   if (!isMounted && idx !== 0) return null;
+                   
+                   return (
+                     <Image 
+                       key={industry.image}
+                       src={industry.image} 
+                       alt={`Premium custom web design and development mockup for ${industry.name} businesses by DevZilla Agency`} 
+                       fill
+                       priority={idx === 0}
+                       className={`object-cover object-top transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                         idx === currentIndex ? 'opacity-100 scale-100 blur-0 z-10' : 'opacity-0 scale-110 blur-sm z-0'
+                       }`} 
+                     />
+                   );
+                 })}
                  
                  {/* Dark Overlay gradient for text readability */}
                  <div className="absolute inset-0 bg-gradient-to-t from-[#060b1f] via-transparent to-transparent opacity-90"></div>
