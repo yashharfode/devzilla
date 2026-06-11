@@ -1,10 +1,14 @@
 import FinalCTA from '@/components/FinalCTA';
 import SeoHero from '@/components/seo/SeoHero';
+import { Metadata } from 'next';
 import SeoPricing from '@/components/seo/SeoPricing';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'SEO Services | DevZilla Agency',
   description: 'AI-Powered SEO, AEO & GEO Solutions to dominate Google, ChatGPT, and Gemini search results.',
+  alternates: {
+    canonical: '/seo',
+  },
 };
 
 export default function SeoPage() {

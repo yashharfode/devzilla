@@ -113,7 +113,7 @@ export default function Hero() {
                    <Image 
                      key={industry.image}
                      src={industry.image} 
-                     alt={`${industry.name} Website Mockup`} 
+                     alt={`Premium custom web design and development mockup for ${industry.name} businesses by DevZilla Agency`} 
                      fill
                      priority={idx === 0}
                      className={`object-cover object-top transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${

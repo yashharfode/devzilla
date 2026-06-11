@@ -50,7 +50,7 @@ export default function CategoryGallery({ categories, variant }: { categories: C
                 >
                   <Image 
                     src={imagePath} 
-                    alt={`${category.name} Website`} 
+                    alt={`High-converting ${category.name} website design portfolio project by DevZilla`} 
                     fill
                     className="object-cover object-top transition-transform duration-[6000ms] ease-linear group-hover:object-bottom"
                   />
@@ -85,7 +85,7 @@ export default function CategoryGallery({ categories, variant }: { categories: C
           >
             {/* The image scrolls inside this container if it's too tall */}
             <div className="w-full h-full overflow-auto custom-scrollbar">
-               <img src={selectedImage} alt="Full screen view" className="w-full h-auto object-cover" />
+               <img src={selectedImage} alt="High-resolution full-screen view of premium web design project by DevZilla" className="w-full h-auto object-cover" />
             </div>
           </div>
         </div>

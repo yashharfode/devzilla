@@ -18,8 +18,12 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://devzilla.com'),
   title: "DevZilla - Premium Website Packages for Restaurants",
   description: "DevZilla provides premium website packages for restaurants and cafes.",
+  alternates: {
+    canonical: '/',
+  },
   verification: {
     google: "PJV7aMem6uIK8VjPkQsV3OscOmSlRbu-8gggahJGydI",
   },
