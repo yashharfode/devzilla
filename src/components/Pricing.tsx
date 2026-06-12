@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 
 export default function Pricing() {
-  const [activeTab, setActiveTab] = useState<'restaurant' | 'common'>('restaurant');
+  const [activeTab, setActiveTab] = useState<'restaurant' | 'hospital' | 'common'>('restaurant');
 
   const pricingData = {
     restaurant: [
@@ -20,8 +20,7 @@ export default function Pricing() {
           "Gallery (Up to 15 Photos)",
           "Contact Form",
           "Google Maps Integration",
-          "WhatsApp Button",
-          "Call Button",
+          "WhatsApp & Call Button",
           "Basic SEO Setup",
           "Speed Optimization",
           "Social Media Links"
@@ -36,8 +35,7 @@ export default function Pricing() {
         features: [
           <span key="bold" className="font-bold text-white">Everything in BASIC +</span>,
           "Multi-Page Website (5-7 Pages)",
-          "About Us Page",
-          "Why Choose Us Section",
+          "About Us / Why Choose Us",
           "Customer Reviews / Testimonials",
           "Special Offers / Combos",
           "Food Categories",
@@ -68,6 +66,87 @@ export default function Pricing() {
           "Priority Support"
         ],
         highlight: false
+      }
+    ],
+    hospital: [
+      {
+        name: "Basic Clinic",
+        desc: "Perfect for Individual Doctors & Small Clinics",
+        price: "12,999",
+        oldPrice: "17,999",
+        features: [
+          "Premium Professional Landing Page",
+          "Mobile Responsive Design",
+          "Services & Treatments Section",
+          "Clinic Facility Gallery (15 Photos)",
+          "Appointment Inquiry Form",
+          "Google Maps Integration",
+          "WhatsApp & Direct Call Button",
+          "Basic SEO Setup",
+          "Speed Optimization",
+          "Social Media Links"
+        ],
+        highlight: false
+      },
+      {
+        name: "Standard Hospital",
+        desc: "Best for Multi-specialty Clinics & Small Hospitals",
+        price: "17,999",
+        oldPrice: "23,999",
+        features: [
+          <span key="bold" className="font-bold text-white">Everything in BASIC CLINIC +</span>,
+          "Multi-Page Website (5-7 Pages)",
+          "About Hospital / Doctor Profiles",
+          "Patient Reviews / Testimonials",
+          "Facilities & Wards Showcase",
+          "Department Categories",
+          "Advanced Facility Gallery",
+          "Better SEO (On-page + Technical)",
+          "WhatsApp Appointment Booking",
+          "Google Analytics Setup",
+          "Performance Optimization"
+        ],
+        highlight: true
+      },
+      {
+        name: "Premium Hospital",
+        desc: "Complete Solution for Large Hospitals",
+        price: "24,999",
+        oldPrice: "34,999",
+        features: [
+          <span key="bold" className="font-bold text-white">Everything in STANDARD HOSPITAL +</span>,
+          "Online OPD Appointment System",
+          "Careers / Job Application Form",
+          "Dynamic Doctors Directory",
+          "Admin Panel (Manage Bookings)",
+          "Advanced SEO (Schema + Local SEO)",
+          "Google Search Console Setup",
+          "Live Chat / WhatsApp Chat",
+          "Google Analytics + Conversion Events",
+          "Custom Trust-building Animations",
+          "Priority Support"
+        ],
+        highlight: false
+      },
+      {
+        name: "Enterprise Hospital",
+        desc: "State-of-the-Art Architecture for Major Hospitals",
+        price: "49,999",
+        oldPrice: "69,999",
+        features: [
+          <span key="bold" className="font-bold text-white">Everything in PREMIUM HOSPITAL +</span>,
+          "Advanced Multi-Doctor Appointment System",
+          "Patient Report / Lab Result Portal",
+          "Tele-consultation Video Integration",
+          "Comprehensive Hospital CRM / CMS",
+          "Online Payment Gateway setup",
+          "Enterprise SEO Strategy & Schema",
+          "Advanced Data Security & HIPAA Config",
+          "AI WhatsApp Chatbot Integration",
+          "Ultra-Fast Enterprise CDN Optimization",
+          "24/7 VIP Technical Support"
+        ],
+        highlight: true
       }
     ],
     common: [
@@ -141,12 +220,18 @@ export default function Pricing() {
           <p className="text-gray-400 text-lg mb-8">Modern Design • Mobile Friendly • SEO Optimized • Fast & Secure</p>
           
           {/* Custom Tabs */}
-          <div className="inline-flex bg-dark border border-gray-800 rounded-full p-1 shadow-lg">
+          <div className="inline-flex bg-dark border border-gray-800 rounded-full p-1 shadow-lg flex-wrap justify-center gap-1">
             <button 
               onClick={() => setActiveTab('restaurant')}
               className={`px-6 md:px-8 py-3 rounded-full text-sm md:text-base font-bold transition-all duration-300 ${activeTab === 'restaurant' ? 'bg-gradient-primary text-dark shadow-md' : 'text-gray-400 hover:text-white'}`}
             >
               <i className="fa-solid fa-utensils mr-2"></i> Restaurants / Cafes
+            </button>
+            <button 
+              onClick={() => setActiveTab('hospital')}
+              className={`px-6 md:px-8 py-3 rounded-full text-sm md:text-base font-bold transition-all duration-300 ${activeTab === 'hospital' ? 'bg-gradient-primary text-dark shadow-md' : 'text-gray-400 hover:text-white'}`}
+            >
+              <i className="fa-solid fa-user-doctor mr-2"></i> Hospitals / Clinics
             </button>
             <button 
               onClick={() => setActiveTab('common')}
@@ -158,11 +243,11 @@ export default function Pricing() {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16">
+        <div className={`flex flex-col md:flex-row overflow-x-auto pb-4 md:pb-8 snap-x snap-mandatory hide-scrollbar gap-8 max-w-7xl mx-auto mb-16 ${activePlans.length <= 3 ? 'md:justify-center' : 'md:justify-start'}`}>
           {activePlans.map((plan, index) => (
             <div 
               key={index}
-              className={`glass-card rounded-3xl p-8 flex flex-col mt-4 md:mt-8 transition-all ${plan.highlight ? 'border border-primary transform md:-translate-y-4 shadow-[0_0_30px_rgba(244,185,66,0.15)]' : ''}`} 
+              className={`glass-card rounded-3xl p-8 flex flex-col mt-4 md:mt-8 transition-all w-full md:w-[340px] lg:w-[360px] shrink-0 snap-center ${plan.highlight ? 'border border-primary transform md:-translate-y-4 shadow-[0_0_30px_rgba(244,185,66,0.15)]' : ''}`} 
               data-aos="fade-up" 
               data-aos-delay={index * 100}
             >
