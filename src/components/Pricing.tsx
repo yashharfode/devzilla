@@ -25,6 +25,11 @@ export default function Pricing() {
           "Speed Optimization",
           "Social Media Links"
         ],
+        freeServices: [
+          "1 Month Free Maintenance",
+          "Free Logo Design",
+          "Upto 3 Digital Posters/Flyers (PNG/JPEG)"
+        ],
         highlight: false
       },
       {
@@ -45,6 +50,11 @@ export default function Pricing() {
           "Google Analytics Setup",
           "Performance Optimization"
         ],
+        freeServices: [
+          "2 Months Free Maintenance",
+          "Free Logo Design",
+          "Upto 5 Digital Posters/Flyers (PNG/JPEG)"
+        ],
         highlight: true
       },
       {
@@ -64,6 +74,12 @@ export default function Pricing() {
           "Google Analytics + Events",
           "Custom Animations",
           "Priority Support"
+        ],
+        freeServices: [
+          "3 Months Free Maintenance",
+          "Free Logo Design",
+          "Upto 8 Digital Posters/Flyers (PNG/JPEG)",
+          "Dedicated Account Manager"
         ],
         highlight: false
       }
@@ -86,6 +102,11 @@ export default function Pricing() {
           "Speed Optimization",
           "Social Media Links"
         ],
+        freeServices: [
+          "1 Month Free Maintenance",
+          "Free Logo Design",
+          "Upto 3 Digital Health Posters (PNG/JPEG)"
+        ],
         highlight: false
       },
       {
@@ -105,6 +126,11 @@ export default function Pricing() {
           "WhatsApp Appointment Booking",
           "Google Analytics Setup",
           "Performance Optimization"
+        ],
+        freeServices: [
+          "2 Months Free Maintenance",
+          "Free Logo Design",
+          "Upto 5 Digital Health Posters (PNG/JPEG)"
         ],
         highlight: true
       },
@@ -126,6 +152,12 @@ export default function Pricing() {
           "Custom Trust-building Animations",
           "Priority Support"
         ],
+        freeServices: [
+          "3 Months Free Maintenance",
+          "Free Logo Design",
+          "Upto 8 Digital Health Posters (PNG/JPEG)",
+          "Dedicated Account Manager"
+        ],
         highlight: false
       },
       {
@@ -146,64 +178,88 @@ export default function Pricing() {
           "Ultra-Fast Enterprise CDN Optimization",
           "24/7 VIP Technical Support"
         ],
+        freeServices: [
+          "6 Months Free Maintenance",
+          "Premium Brand Identity Kit",
+          "Upto 15 Digital Health Posters (PNG/JPEG)",
+          "Dedicated VP Level Account Manager"
+        ],
         highlight: true
       }
     ],
     common: [
       {
-        name: "Starter",
-        desc: "Perfect for New Businesses",
-        price: "9,999",
-        oldPrice: "14,999",
+        name: "Starter Business",
+        desc: "Perfect for Small Businesses & Startups",
+        price: "12,999",
+        oldPrice: "17,999",
         features: [
-          "Premium Single Landing Page",
+          "Premium Landing Page",
           "Mobile Responsive Design",
-          "Services Section",
-          "Basic Gallery (Up to 10 Photos)",
-          "Contact Form",
+          "Services / Products Section",
+          "Business Portfolio (15 Photos)",
+          "Lead Capture Form",
           "Google Maps Integration",
-          "WhatsApp Button",
+          "WhatsApp & Call Button",
           "Basic SEO Setup",
           "Speed Optimization",
           "Social Media Links"
         ],
+        freeServices: [
+          "1 Month Free Maintenance",
+          "Free Logo Design",
+          "Upto 3 Digital Marketing Posters"
+        ],
         highlight: false
       },
       {
-        name: "Professional",
-        desc: "Best for Growing Agencies",
-        price: "14,999",
-        oldPrice: "21,999",
+        name: "Professional Business",
+        desc: "Best for Growing Companies & Agencies",
+        price: "17,999",
+        oldPrice: "23,999",
         features: [
-          <span key="bold" className="font-bold text-white">Everything in STARTER +</span>,
-          "Multi-Page Website (Up to 5 Pages)",
-          "About Us & Team Page",
-          "Testimonials / Case Studies",
-          "Service Detail Pages",
-          "Advanced Gallery",
+          <span key="bold" className="font-bold text-white">Everything in STARTER BUSINESS +</span>,
+          "Multi-Page Website (5-7 Pages)",
+          "About Us / Team Profiles",
+          "Client Testimonials / Case Studies",
+          "Detailed Service Pages",
+          "FAQ Section",
+          "Advanced Portfolio Gallery",
           "Better SEO (On-page + Technical)",
-          "Lead Capture Forms",
+          "WhatsApp Inquiry Integration",
           "Google Analytics Setup",
           "Performance Optimization"
+        ],
+        freeServices: [
+          "2 Months Free Maintenance",
+          "Free Logo Design",
+          "Upto 5 Digital Marketing Posters"
         ],
         highlight: true
       },
       {
-        name: "Corporate",
-        desc: "Complete Digital Presence",
-        price: "21,999",
-        oldPrice: "29,999",
+        name: "Corporate Elite",
+        desc: "Complete Solution for Established Brands",
+        price: "24,999",
+        oldPrice: "34,999",
         features: [
-          <span key="bold" className="font-bold text-white">Everything in PROFESSIONAL +</span>,
-          "Up to 10 Pages",
-          "Dynamic Content (Easy to Update)",
-          "Admin Panel (Basic)",
+          <span key="bold" className="font-bold text-white">Everything in PROFESSIONAL BUSINESS +</span>,
+          "Online Booking / Consultation System",
+          "Careers / Hiring Board",
+          "Dynamic Service Catalog",
+          "Admin Panel (Content Management)",
           "Advanced SEO (Schema + Local SEO)",
           "Google Search Console Setup",
-          "Live Chat Integration",
-          "Custom Animations",
-          "Premium Stock Photos",
+          "Live Chat / WhatsApp Chat",
+          "Google Analytics + Conversion Events",
+          "Custom Professional Animations",
           "Priority Support"
+        ],
+        freeServices: [
+          "3 Months Free Maintenance",
+          "Free Logo Design",
+          "Upto 8 Digital Marketing Posters",
+          "Dedicated Account Manager"
         ],
         highlight: false
       }
@@ -269,13 +325,29 @@ export default function Pricing() {
               
               <div className="text-center text-xs font-bold text-gray-500 uppercase tracking-widest mb-6">Features Included</div>
               
-              <ul className="space-y-4 mb-8 flex-grow">
+              <ul className="space-y-4 mb-6 flex-grow">
                 {plan.features.map((feature, fIndex) => (
                   <li key={fIndex} className="flex items-start gap-3 text-gray-300 text-sm">
                     <i className="fa-solid fa-circle-check text-green-500 mt-1"></i> {feature}
                   </li>
                 ))}
               </ul>
+              
+              {plan.freeServices && plan.freeServices.length > 0 && (
+                <div className="mt-6 pt-6 border-t border-dashed border-gray-800 mb-8">
+                  <h5 className="text-[11px] text-primary font-bold uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <i className="fa-solid fa-gift text-primary"></i> Free Bonuses
+                  </h5>
+                  <ul className="space-y-2">
+                    {plan.freeServices.map((fs, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-xs font-semibold text-gray-300">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#f4b942] mt-1.5 shrink-0"></div>
+                        <span>{fs}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               
               <Link href={`https://wa.me/919244161034?text=Hi, I am interested in the ${plan.name} Plan for my business.`} className={`w-full block text-center py-3 rounded-xl font-bold transition-all ${plan.highlight ? 'bg-gradient-primary text-dark hover:scale-105 shadow-[0_0_15px_rgba(244,185,66,0.4)]' : 'border border-gray-700 text-white hover:bg-gray-800'}`}>
                 Choose {plan.name}
@@ -327,24 +399,36 @@ export default function Pricing() {
             <div className="p-6 flex-grow text-sm">
               <ul className="space-y-4 text-gray-300">
                 <li className="flex justify-between items-center border-b border-gray-800 pb-2">
-                  <span className="flex items-center gap-2"><i className="fa-solid fa-gear text-red-400 w-4"></i> Admin Panel (Advanced)</span>
-                  <span className="font-mono">₹5,000 - ₹10,000</span>
+                  <span className="flex items-center gap-2"><i className="fa-solid fa-user-gear text-red-400 w-4"></i> Admin Panel / CMS</span>
+                  <span className="font-mono">₹5,000</span>
                 </li>
                 <li className="flex justify-between items-center border-b border-gray-800 pb-2">
-                  <span className="flex items-center gap-2"><i className="fa-solid fa-cart-shopping text-orange-400 w-4"></i> Add To Cart System</span>
-                  <span className="font-mono">₹5,000 - ₹8,000</span>
+                  <span className="flex items-center gap-2"><i className="fa-solid fa-cart-shopping text-orange-400 w-4"></i> Online Ordering / Cart</span>
+                  <span className="font-mono">₹8,000</span>
                 </li>
                 <li className="flex justify-between items-center border-b border-gray-800 pb-2">
-                  <span className="flex items-center gap-2"><i className="fa-solid fa-bag-shopping text-yellow-400 w-4"></i> Full Online Ordering</span>
-                  <span className="font-mono">₹8,000 - ₹15,000</span>
+                  <span className="flex items-center gap-2"><i className="fa-solid fa-calendar-check text-yellow-400 w-4"></i> Table / Appointment Booking</span>
+                  <span className="font-mono">₹3,000</span>
                 </li>
                 <li className="flex justify-between items-center border-b border-gray-800 pb-2">
-                  <span className="flex items-center gap-2"><i className="fa-solid fa-credit-card text-green-400 w-4"></i> Payment Gateway</span>
-                  <span className="font-mono">₹3,000 - ₹5,000</span>
+                  <span className="flex items-center gap-2"><i className="fa-brands fa-whatsapp text-green-400 w-4"></i> WhatsApp Bot Automation</span>
+                  <span className="font-mono">₹4,000</span>
                 </li>
                 <li className="flex justify-between items-center border-b border-gray-800 pb-2">
-                  <span className="flex items-center gap-2"><i className="fa-solid fa-users text-blue-400 w-4"></i> Customer Login</span>
-                  <span className="font-mono">₹3,000 - ₹5,000</span>
+                  <span className="flex items-center gap-2"><i className="fa-solid fa-chart-line text-blue-400 w-4"></i> Advanced SEO Setup</span>
+                  <span className="font-mono">₹4,500</span>
+                </li>
+                <li className="flex justify-between items-center border-b border-gray-800 pb-2">
+                  <span className="flex items-center gap-2"><i className="fa-solid fa-credit-card text-teal-400 w-4"></i> Payment Gateway Setup</span>
+                  <span className="font-mono">₹2,000</span>
+                </li>
+                <li className="flex justify-between items-center border-b border-gray-800 pb-2">
+                  <span className="flex items-center gap-2"><i className="fa-solid fa-language text-purple-400 w-4"></i> Multi-language Support</span>
+                  <span className="font-mono">₹3,500</span>
+                </li>
+                <li className="flex justify-between items-center border-b border-gray-800 pb-2">
+                  <span className="flex items-center gap-2"><i className="fa-solid fa-comments text-pink-400 w-4"></i> Live Chat Integration</span>
+                  <span className="font-mono">₹1,500</span>
                 </li>
                 <li className="flex justify-between items-center">
                   <span className="flex items-center gap-2"><i className="fa-solid fa-code text-purple-400 w-4"></i> Custom Features</span>
@@ -380,12 +464,21 @@ export default function Pricing() {
                 </li>
               </ul>
               
-              <div className="mt-auto border border-purple-500/30 bg-purple-500/10 rounded-xl p-4 flex items-center justify-center gap-4">
+              <div className="border border-purple-500/30 bg-purple-500/10 rounded-xl p-4 flex items-center justify-center gap-4 mb-4">
                 <i className="fa-solid fa-gear text-3xl text-purple-400"></i>
                 <div>
                   <div className="text-xl font-bold text-white">₹999 <span className="text-sm text-gray-400 font-normal">/ Month</span></div>
                   <div className="text-xs text-purple-300">or ₹9,999 / Year (Save 17%)</div>
                 </div>
+              </div>
+              
+              <div className="mt-auto pt-4 border-t border-gray-800">
+                <span className="text-purple-400 font-bold text-xs uppercase tracking-wider block mb-2">Extra Maintenance Packages</span>
+                <ul className="space-y-1 text-gray-400 text-xs font-mono">
+                  <li className="flex justify-between"><span>1 Month:</span><span className="text-white">₹1,000</span></li>
+                  <li className="flex justify-between"><span>3 Months:</span><span className="text-white">₹2,500</span></li>
+                  <li className="flex justify-between"><span>6 Months:</span><span className="text-white">₹4,500</span></li>
+                </ul>
               </div>
             </div>
           </div>
